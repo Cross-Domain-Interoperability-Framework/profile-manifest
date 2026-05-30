@@ -1,106 +1,44 @@
-# CDIF Packaging
+# CDIF Manifest (profile module)
 
-Tools and examples for converting between [CDIF](https://cross-domain-interoperability-framework.github.io/cdifbook/) JSON-LD metadata and dataset packaging formats, with a current focus on [RO-Crate](https://www.researchobject.org/ro-crate/).
+This repository holds the published artifacts for the **CDIF Manifest profile module** — the `cdifManifest` building block from the [metadataBuildingBlocks](https://github.com/Cross-Domain-Interoperability-Framework/metadataBuildingBlocks) source register.
 
-## Repository Structure
+> **Scope.** `cdifManifest` documents how a dataset's content is packaged for distribution — file lists, integrity checksums (`spdx:Checksum`), archive structure, and download endpoints. It complements `cdifCore` and `cdifDiscovery` by carrying the bytes-on-disk story rather than the conceptual/structural one.
 
-```
-packaging/
-  tools/                        Conversion and validation scripts
-    ConvertToROCrate.py          CDIF JSON-LD -> RO-Crate 1.1
-    ROCrateToCDIF.py             RO-Crate 1.1 -> CDIF JSON-LD
-    ValidateROCrate.py           RO-Crate structural validator
-  examples/                     Example files (valid and invalid)
-  docs/                         Documentation
-    RO-Crate-relationship.md    Property mappings and conversion details
-```
+## Specification
 
-## Quick Start
-
-### Prerequisites
-
-```bash
-pip install PyLD jsonschema
-```
-
-### Convert CDIF to RO-Crate
-
-```bash
-python tools/ConvertToROCrate.py input.jsonld -o output-rocrate.json -v
-```
-
-### Convert RO-Crate to CDIF
-
-```bash
-python tools/ROCrateToCDIF.py input-rocrate.json -o output-cdif.json -v --validate
-```
-
-### Validate RO-Crate
-
-```bash
-python tools/ValidateROCrate.py input-rocrate.json --no-convert
-```
-
-## Tools
-
-### ConvertToROCrate.py
-
-Transforms CDIF/ADA nested JSON-LD into RO-Crate 1.1 flat `@graph` form using standard JSON-LD operations (expand, flatten, compact). Injects the RO-Crate metadata descriptor and remaps the root Dataset `@id` to `"./"`.
-
-### ROCrateToCDIF.py
-
-Converts an RO-Crate `@graph` document back to CDIF nested JSON-LD. Handles both distribution patterns:
-- **Multiple independent DataDownloads** -- each with its own `contentUrl`
-- **Archive distributions** -- a single DataDownload with `hasPart` containing MediaObject components
-
-Also creates `schema:subjectOf` (CDIF catalog record) from the RO-Crate metadata descriptor, with `dcterms:conformsTo` pointing to the specified CDIF profile (discovery or complete).
-
-### ValidateROCrate.py
-
-Validates RO-Crate documents against 13 structural checks (flat graph, metadata descriptor, root dataset, etc.) and optionally runs SHACL validation via `rocrate-validator`.
-
-## Documentation
-
-See [docs/RO-Crate-relationship.md](docs/RO-Crate-relationship.md) for detailed property mappings between CDIF and RO-Crate, structural differences, pipeline diagrams, and round-trip examples.
+- **[cdifManifestStructuredSchema.json](cdifManifestStructuredSchema.json)** — Resolved JSON Schema (Draft 2020-12) generated from the source register.
+- **[manifestRules.shacl](manifestRules.shacl)** — Self-contained SHACL shapes, merged from every composing building block plus the profile-level shapes.
+- **[cdifManifest-frame.jsonld](cdifManifest-frame.jsonld)** — JSON-LD frame used by `FrameAndValidate.py`.
 
 ## Examples
 
-The `examples/` directory contains RO-Crate files and CDIF conversion outputs:
+`examples/` holds JSON-LD examples illustrating archive-distribution manifests, RO-Crate-aligned packagings, and per-distribution checksums. Validate one with:
 
-- `MoonGen-experiment-results.cdif.json` — CDIF cdifComplete record generated from a [pos MoonGen testbed RO-Crate](https://doi.org/10.5281/zenodo.16606355) using `ROCrateToCDIF.py`. Demonstrates archive distribution with 95 component files, authors with ORCIDs, and institutional affiliation. Validates against both cdifComplete JSON Schema and SHACL shapes.
-- `FeS2-Analysis.cdifprov.json` — cdifProv conversion of a Galaxy workflow RO-Crate (from [prov-context-quality](https://github.com/Cross-Domain-Interoperability-Framework/prov-context-quality))
-- Files with `-INVALID` in the name are older examples that do not pass RO-Crate validation (kept for reference).
+```bash
+python FrameAndValidate.py examples/exampleCdifManifest.json --validate
+```
 
-## Workflow Run RO-Crates
+`FrameAndValidate.py` frames the document against `cdifManifest-frame.jsonld`, array-wraps the multi-valued properties, then validates against the JSON Schema. Validation is open-world: unknown properties pass.
 
-Workflow Run RO-Crate (WRROC) conversions to cdifProv are handled in the [prov-context-quality](https://github.com/Cross-Domain-Interoperability-Framework/prov-context-quality) repository, which contains tools for converting standard WRROC, ARC, and Galaxy workflow RO-Crates to CDIF provenance records. See [docs/RO-Crate-relationship.md](docs/RO-Crate-relationship.md) for details.
+## RO-Crate interop
 
----
+A separate set of converter scripts and the prior packaging exploration live under `tools/` and `docs/`. Those are working materials and not part of the release-artifact set.
 
-## History Notes
+## Synced from metadataBuildingBlocks
 
-This repository was created to explore integration between CDIF metadata and various dataset packaging formats. Early targets for investigation included:
+These generated artifacts are re-synced when the source register changes:
 
-### RO-Crate
+| file | source command |
+|---|---|
+| `cdifManifestStructuredSchema.json` | `python tools/resolve_schema.py cdifManifest -o cdifManifestStructuredSchema.json` |
+| `manifestRules.shacl` | `python tools/validate_shacl.py cdifManifest --emit-shapes manifestRules.shacl` |
 
-[RO-Crate](https://www.researchobject.org/ro-crate/specification/1.2/metadata.html#base-metadata-standard-schemaorg) uses schema.org for base metadata and adds namespace extensions from several vocabularies:
+Source profile: `_sources/profiles/cdifProfile/cdifManifest/`.
 
-- [PCDM](https://pcdm.org/2016/04/18/models) -- for describing repositories or collections of digital objects
-- [Profiles Vocabulary](https://www.w3.org/TR/2019/NOTE-dx-prof-20191218/) -- for describing profiles
-- [Dublin Core Terms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/) -- `conformsTo`, `Standard`
-- [IANA Link Relations](https://www.iana.org/assignments/link-relations/) -- `cite-as`
-- [GeoSPARQL](https://opengeospatial.github.io/ogc-geosparql/geosparql11/) -- `Geometry`, `asWKT`
-- [Bioschemas](https://bioschemas.org/profiles/ComputationalWorkflow/1.0-RELEASE) -- `ComputationalWorkflow`, `FormalParameter`, `input`, `output`
-- [CodeMeta 3.0](https://w3id.org/codemeta/3.0) -- software-related properties
-- RO-Crate community namespace -- for terms not covered by other vocabularies (e.g., `localPath`)
+## Development branch
 
-### Croissant
+Active work for the 2026-06 review revision is on the `reviewRevision202606` branch. `main` reflects the prior release state. New changes should target the review branch; it is merged to main on release.
 
-[Croissant](https://docs.mlcommons.org/croissant/docs/croissant-spec.html) uses schema.org for base metadata. A Croissant description contains general information about the dataset (name, description, license, URL). Croissant modifies schema.org `distribution` to specify expected types: `crs:FileObject` | `crs:FileSet`, and defines `isLiveDataset` and `citeAs`. `FileObject` has `schema:CreativeWork` properties plus `containedIn`. `FileSet` likewise adds `containedIn`, `includes`, `excludes` (using [glob patterns](https://en.wikipedia.org/wiki/Glob_(programming))). `RecordSet` describes how content within the resources is organized.
+## License
 
-See also: [Croissant working documents](https://drive.google.com/drive/folders/1a5J20z_BnFNjGfnxeIQ7kG2BXq7iUe00?usp=drive_link)
-
-### Other Formats
-
-- **BagIt** -- under consideration
-- **Planetary Data System Bundle** -- under consideration
+This work is dedicated to the public domain under [CC0 1.0 Universal](LICENSE).
