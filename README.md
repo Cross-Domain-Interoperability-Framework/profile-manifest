@@ -6,6 +6,7 @@ This repository holds the published artifacts for the **CDIF Manifest profile mo
 
 ## Specification
 
+- **[CDIFManifestImplementationGuide.md](CDIFManifestImplementationGuide.md)** — Implementation guide (auto-generated draft; hand-curated content pending).
 - **[cdifManifestStructuredSchema.json](cdifManifestStructuredSchema.json)** — Resolved JSON Schema (Draft 2020-12) generated from the source register.
 - **[manifestRules.shacl](manifestRules.shacl)** — Self-contained SHACL shapes, merged from every composing building block plus the profile-level shapes.
 - **[cdifManifest-frame.jsonld](cdifManifest-frame.jsonld)** — JSON-LD frame used by `FrameAndValidate.py`.

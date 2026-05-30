@@ -6,6 +6,7 @@ This repository publishes the **CDIF Manifest profile module** (`cdifManifest`).
 
 ## Key files
 
+- `CDIFManifestImplementationGuide.md` — implementation guide (auto-generated draft from the StructuredSchema; hand-curated content pending)
 - `cdifManifestStructuredSchema.json` — JSON Schema (generated)
 - `manifestRules.shacl` — merged SHACL shapes (generated)
 - `cdifManifest-frame.jsonld` — JSON-LD frame used by `FrameAndValidate.py`
