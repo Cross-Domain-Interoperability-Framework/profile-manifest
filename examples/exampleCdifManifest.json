@@ -1,0 +1,97 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "spdx": "http://spdx.org/rdf/terms#",
+    "ex": "https://example.org/"
+  },
+  "@id": "ex:dataset_archive_001",
+  "@type": [
+    "schema:Dataset"
+  ],
+  "schema:name": "Geochemical Analysis Results Package",
+  "schema:identifier": "https://doi.org/10.1234/geochem-archive-2025",
+  "schema:url": "https://example.org/datasets/geochem-archive-2025",
+  "schema:dateModified": "2025-08-01",
+  "schema:license": [
+    "https://creativecommons.org/licenses/by/4.0/"
+  ],
+  "schema:subjectOf": {
+    "@type": [
+      "schema:Dataset"
+    ],
+    "schema:additionalType": [
+      "dcat:CatalogRecord"
+    ],
+    "@id": "ex:metadata_archive_001",
+    "schema:about": {
+      "@id": "ex:dataset_archive_001"
+    },
+    "dcterms:conformsTo": [
+      {
+        "@id": "https://w3id.org/cdif/manifest/1.0"
+      }
+    ]
+  },
+  "schema:distribution": [
+    {
+      "@type": [
+        "schema:DataDownload"
+      ],
+      "schema:name": "Geochemistry results archive",
+      "schema:contentUrl": "https://example.org/downloads/geochem-results-2025.zip",
+      "schema:encodingFormat": [
+        "application/zip"
+      ],
+      "dcterms:conformsTo": [
+        {
+          "@id": "https://w3id.org/cdif/manifest/1.0"
+        }
+      ],
+      "schema:hasPart": [
+        {
+          "@id": "#data-csv",
+          "@type": [
+            "schema:MediaObject"
+          ],
+          "schema:name": "results.csv",
+          "schema:description": "Tabular geochemical analysis results",
+          "schema:encodingFormat": [
+            "text/csv"
+          ],
+          "schema:size": {
+            "@type": [
+              "schema:QuantitativeValue"
+            ],
+            "schema:value": 245000,
+            "schema:unitText": "byte"
+          },
+          "spdx:checksum": {
+            "@type": [
+              "spdx:Checksum"
+            ],
+            "spdx:algorithm": "sha256",
+            "spdx:checksumValue": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2"
+          }
+        },
+        {
+          "@id": "#metadata-json",
+          "@type": [
+            "schema:MediaObject"
+          ],
+          "schema:name": "metadata.json",
+          "schema:description": "Metadata sidecar for the results file",
+          "schema:encodingFormat": [
+            "application/json"
+          ],
+          "schema:about": [
+            {
+              "@id": "#data-csv"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

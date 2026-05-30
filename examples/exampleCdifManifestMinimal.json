@@ -1,0 +1,31 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "ex": "https://example.org/"
+  },
+  "@type": ["schema:Dataset"],
+  "@id": "ex:dataset/minimal-archived",
+  "schema:name": "Minimal archived dataset",
+  "schema:subjectOf": {
+    "dcterms:conformsTo": [
+      { "@id": "https://w3id.org/cdif/manifest/1.0" }
+    ]
+  },
+  "schema:distribution": [
+    {
+      "@type": ["schema:DataDownload"],
+      "schema:name": "Bundle",
+      "schema:contentUrl": "https://example.org/data/bundle.zip",
+      "schema:encodingFormat": ["application/zip"],
+      "schema:hasPart": [
+        {
+          "@id": "#part-1",
+          "@type": ["schema:MediaObject"],
+          "schema:name": "data.csv",
+          "schema:encodingFormat": ["text/csv"]
+        }
+      ]
+    }
+  ]
+}

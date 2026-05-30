@@ -1,0 +1,206 @@
+@prefix cdi: <http://ddialliance.org/Specification/DDI-CDI/1.0/RDF/> .
+@prefix cdif: <https://cdif.org/0.1/> .
+@prefix cdifd: <https://cdif.org/validation/0.1/shacl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix schema: <http://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+cdifd:CDIFArchiveHasPartShape a sh:NodeShape ;
+    sh:property [ sh:message "An archive distribution must have at least one component file (schema:hasPart)." ;
+            sh:minCount 1 ;
+            sh:path schema:hasPart ] ;
+    sh:target [ a sh:SPARQLTarget ;
+            sh:select """
+	  PREFIX schema: <http://schema.org/>
+	  SELECT DISTINCT ?this
+	    WHERE {
+	      ?dataset a schema:Dataset .
+	      ?dataset schema:distribution ?this .
+	      ?this a schema:DataDownload .
+	      ?this schema:hasPart ?part .
+	    }""" ] .
+
+cdifd:CDIFDefinedTermShape a sh:NodeShape ;
+    sh:message "A DefinedTerm must have a name (label), an identifier, OR a termCode. All three are recommended." ;
+    sh:or ( [ sh:property [ sh:message "a defined term should have an identifier that is a resolvable URI" ;
+                        sh:minCount 1 ;
+                        sh:or ( [ sh:datatype xsd:string ] [ sh:and ( [ sh:class schema:PropertyValue ] [ sh:or ( [ sh:property [ sh:datatype xsd:string ;
+                                                                    sh:message "a value for the identifier should be provided; can provide either full URI or identifier token part of URI if a url is provided." ;
+                                                                    sh:minCount 1 ;
+                                                                    sh:path schema:value ] ] [ sh:property [ sh:datatype xsd:string ;
+                                                                    sh:message "value expected to be a resolvable http URI, but we aren't testing to see if the URL resolves..." ;
+                                                                    sh:minCount 1 ;
+                                                                    sh:path schema:url ;
+                                                                    sh:pattern "^https?:\\/\\/[^\\s]+$" ] ] ) ] ) ] ) ;
+                        sh:path schema:identifier ] ] [ sh:property cdifd:termLabelProperty ] [ sh:property [ sh:datatype xsd:string ;
+                        sh:message "a termCode (short code or notation) for the term within its vocabulary" ;
+                        sh:minCount 1 ;
+                        sh:path schema:termCode ] ] ) ;
+    sh:property [ sh:message "inDefinedTermSet identifies the controlled vocabulary from which this term comes; should be a URI or string identifier" ;
+            sh:minCount 0 ;
+            sh:or ( [ sh:nodeKind sh:IRI ] [ sh:datatype xsd:string ] ) ;
+            sh:path schema:inDefinedTermSet ;
+            sh:severity sh:Info ],
+        [ sh:datatype xsd:string ;
+            sh:message "termCode is a short code or notation for the term within its vocabulary (analogous to skos:notation)" ;
+            sh:minCount 0 ;
+            sh:path schema:termCode ;
+            sh:severity sh:Info ] ;
+    sh:target [ a sh:SPARQLTarget ;
+            sh:select """\r
+      PREFIX schema: <http://schema.org/>\r
+      SELECT DISTINCT ?this\r
+        WHERE {\r
+        ?this a schema:DefinedTerm .\r
+        {\r
+          ?this schema:name "example defined term" .\r
+          FILTER NOT EXISTS { ?s ?p ?this . }\r
+        }\r
+        Union\r
+        {\r
+         VALUES ?p {\r
+            schema:linkRelationship\r
+            schema:measurementTechnique\r
+            schema:keywords\r
+            schema:name\r
+          }\r
+         ?s ?p ?this .\r
+        }\r
+      }""" ] .
+
+cdifd:CDIFIdentifierShape a sh:NodeShape ;
+    sh:message "identifier rules. for an identifier, the property ID is expected to specify an identifier scheme.Get values from https://registry.identifiers.org/registry/ for interoperability",
+        "identifier rules. the context of an identifier, the PropertyValue provides the identifier value string-- either as a schema:value or a url. The value can be either a full URI or identifier token part of URI if a url is provided. url value must be a resolvable URI that identifies the resource." ;
+    sh:or ( [ sh:property [ sh:datatype xsd:string ;
+                        sh:message "identifier rules. a value for the identifier should be provided; can provide either full URI or identifier token part of URI if a url is provided." ;
+                        sh:minCount 1 ;
+                        sh:path schema:value ] ] [ sh:property [ sh:datatype xsd:string ;
+                        sh:message "identifier rules. schema:url is expected to be a resolvable HTTP URI, but we aren't testing to see if the URL resolves..." ;
+                        sh:minCount 1 ;
+                        sh:path schema:url ;
+                        sh:pattern "^https?:\\/\\/[^\\s]+$" ] ] ) ;
+    sh:property [ sh:minCount 1 ;
+            sh:or ( [ sh:nodeKind sh:IRI ] [ sh:datatype xsd:string ;
+                        sh:minLength 5 ] [ sh:class schema:DefinedTerm ] ) ;
+            sh:path schema:propertyID ;
+            sh:severity sh:Warning ] ;
+    sh:target [ a sh:SPARQLTarget ;
+            sh:select """\r
+      PREFIX schema: <http://schema.org/>\r
+      SELECT DISTINCT ?this\r
+        WHERE {\r
+        ?this a schema:PropertyValue .\r
+        {\r
+          ?this schema:propertyID "example identifier" .\r
+          FILTER NOT EXISTS { ?s ?p ?this . }\r
+        }\r
+        Union\r
+        {\r
+          ?s schema:identifier ?this .\r
+        }\r
+      }""" ] .
+
+cdifd:CDIFIdentifierTypeTermShape a sh:NodeShape ;
+    sh:message "identifier rules. A Term must have a name (label) or an identifier. It should have both!." ;
+    sh:property [ sh:message "identifier rules. a defined term should have an identifier that is a resolvable URI" ;
+            sh:minCount 1 ;
+            sh:or ( [ sh:nodeKind sh:Literal ] [ sh:and ( [ sh:class schema:PropertyValue ] [ sh:or ( [ sh:property [ sh:datatype xsd:string ;
+                                                        sh:message "identifier rules. a value for the identifier should be provided; can provide either full URI or identifier token part of URI if a url is provided." ;
+                                                        sh:minCount 1 ;
+                                                        sh:path schema:value ] ] [ sh:property [ sh:datatype xsd:string ;
+                                                        sh:message "identifier rules. value must be a resolvable URL, but we aren't testing to see if the URL resolves..... Can't get xsd:anyURI to work with JSON Schema validation..." ;
+                                                        sh:minCount 1 ;
+                                                        sh:path schema:url ;
+                                                        sh:pattern "^https?:\\/\\/[^\\s]+$" ] ] ) ] ) ] ) ;
+            sh:path schema:identifier ] ;
+    sh:target [ a sh:SPARQLTarget ;
+            sh:prefixes ( [ sh:namespace "http://schema.org/" ;
+                        sh:prefix "schema" ] ) ;
+            sh:select """\r
+      PREFIX schema: <http://schema.org/>\r
+      SELECT DISTINCT ?this\r
+        WHERE {\r
+          ?this a schema:DefinedTerm .\r
+          FILTER (\r
+            EXISTS { ?s schema:propertyID ?this . }\r
+          )\r
+        }""" ] .
+
+cdifd:CDIFManifestConformsToShape a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:hasValue <https://w3id.org/cdif/manifest/1.0> ;
+            sh:message "Metadata record must declare conformance to the CDIF manifest profile (https://w3id.org/cdif/manifest/1.0)" ;
+            sh:path dcterms:conformsTo ] ;
+    sh:target [ a sh:SPARQLTarget ;
+            sh:select """
+            PREFIX schema: <http://schema.org/>
+            SELECT ?this
+            WHERE {
+            ?this a schema:Dataset ;
+             schema:about ?parent ;
+             schema:additionalType "dcat:CatalogRecord" .
+            }
+        """ ] .
+
+cdifd:CDIFManifestShape a sh:NodeShape ;
+    sh:property [ sh:message "A dataset declaring CDIF archive distribution conformance should have at least one schema:distribution." ;
+            sh:minCount 1 ;
+            sh:path schema:distribution ;
+            sh:severity sh:Warning ] ;
+    sh:target [ a sh:SPARQLTarget ;
+            sh:select """
+       PREFIX schema: <http://schema.org/>
+            SELECT ?this
+            WHERE {
+              ?this a schema:Dataset .
+              MINUS {
+                ?this schema:about ?x .
+                ?this schema:additionalType "dcat:CatalogRecord" .
+              }
+            }
+          """ ] .
+
+cdifd:dataCubeShape a sh:NodeShape ;
+    sh:message "Data cube nodes (cdi:StructuredDataSet) should have physical mappings." ;
+    sh:property [ sh:message "A StructuredDataSet should have physical mappings (cdif:hasPhysicalMapping) linking variables to their physical representation." ;
+            sh:minCount 1 ;
+            sh:path cdif:hasPhysicalMapping ;
+            sh:severity sh:Warning ] ;
+    sh:targetClass cdi:StructuredDataSet .
+
+cdifd:physicalMappingShape a sh:NodeShape ;
+    sh:message "Physical mapping nodes should link to their corresponding variable definition." ;
+    sh:property [ sh:message "A physical mapping should reference the variable it formats (cdif:formats_InstanceVariable)." ;
+            sh:minCount 1 ;
+            sh:path cdif:formats_InstanceVariable ;
+            sh:severity sh:Warning ] ;
+    sh:target [ a sh:SPARQLTarget ;
+            sh:select """
+            PREFIX cdi: <http://ddialliance.org/Specification/DDI-CDI/1.0/RDF/>
+            PREFIX cdif: <https://cdif.org/0.1/>
+            SELECT ?this
+            WHERE {
+                ?parent cdif:hasPhysicalMapping ?this .
+            }
+        """ ] .
+
+cdifd:tabularDataShape a sh:NodeShape ;
+    sh:message "A TabularTextDataSet must specify either cdi:isDelimited=true or cdi:isFixedWidth=true." ;
+    sh:or ( [ sh:property [ sh:hasValue true ;
+                        sh:path cdi:isDelimited ] ] [ sh:property [ sh:hasValue true ;
+                        sh:path cdi:isFixedWidth ] ] ) ;
+    sh:property [ sh:message "A TabularTextDataSet must have physical mappings (cdif:hasPhysicalMapping) linking variables to columns (required by the JSON Schema)." ;
+            sh:minCount 1 ;
+            sh:path cdif:hasPhysicalMapping ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass cdi:TabularTextDataSet .
+
+cdifd:termLabelProperty a sh:PropertyShape ;
+    sh:datatype xsd:string ;
+    sh:message "a label (schema:name) for the term must be provided, and must have at least 3 characters" ;
+    sh:minCount 1 ;
+    sh:minLength 3 ;
+    sh:path schema:name .
+
