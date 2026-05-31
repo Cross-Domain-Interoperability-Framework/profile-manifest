@@ -14,7 +14,7 @@ Key mappings performed:
 
 Usage:
     python ROCrateToCDIF.py input-rocrate.jsonld -o output-cdif.json
-    python ROCrateToCDIF.py input-rocrate.jsonld -o output.json --profile complete
+    python ROCrateToCDIF.py input-rocrate.jsonld -o output.json --profile core
     python ROCrateToCDIF.py input-rocrate.jsonld -o output.json -v --validate
 """
 
@@ -29,9 +29,15 @@ jsonld.set_document_loader(jsonld.requests_document_loader())
 
 SCRIPT_DIR = Path(__file__).parent
 
-# CDIF profile URIs
+# CDIF profile URIs. The catalog-record's dcterms:conformsTo gets stamped
+# with whichever URI the user picks via --profile. The converter does NOT
+# infer the closest-matching profile from document content; the URI is a
+# declarative claim that the user (or upstream tooling) is responsible for.
+# Default is "core" because it is the minimal common subset — claiming only
+# core is the safest assertion in the absence of a stronger signal.
 CDIF_PROFILES = {
-    "discovery": "https://w3id.org/cdif/profiles/cdifDiscovery/1.0",
+    "core": "https://w3id.org/cdif/core/1.0",
+    "discovery": "https://w3id.org/cdif/discovery/1.0",
     "complete": "https://w3id.org/cdif/profiles/cdifComplete/1.0",
 }
 
@@ -154,7 +160,7 @@ def _has_datadownload_type(entity):
     return bool(DATADOWNLOAD_TYPES.intersection(etype))
 
 
-def convert_rocrate_to_cdif(doc, profile="complete", verbose=False):
+def convert_rocrate_to_cdif(doc, profile="core", verbose=False):
     """Convert an RO-Crate document to CDIF JSON-LD.
 
     Steps:
@@ -199,10 +205,34 @@ def convert_rocrate_to_cdif(doc, profile="complete", verbose=False):
     # Remove from top-level hasPart any items already inside distribution.hasPart
     result = _dedup_haspart_from_distribution(result)
 
+    # Wrap any loose MediaObjects (RO-Crate puts files in hasPart without
+    # typing them as DataDownload) into a synthetic DataDownload in
+    # schema:distribution, so the result matches CDIF's archive-distribution
+    # pattern.
+    result = _wrap_loose_mediaobjects(result)
+
+    # CDIF requires schema:dateModified; RO-Crate only requires schema:datePublished.
+    # If dateModified is absent, fall back to datePublished.
+    _ensure_date_modified(result)
+
     # Normalize: remove nulls, ensure arrays, normalize @type
     result = _normalize(result)
 
     return result
+
+
+def _ensure_date_modified(result):
+    """If schema:dateModified is missing but schema:datePublished is present,
+    copy datePublished into dateModified. CDIF requires dateModified; RO-Crate
+    only requires datePublished, so this lets RO-Crate-sourced documents pass
+    CDIF validation without dropping the original datePublished."""
+    if not isinstance(result, dict):
+        return
+    if result.get("schema:dateModified"):
+        return
+    pub = result.get("schema:datePublished")
+    if pub:
+        result["schema:dateModified"] = pub
 
 
 def _pick_main_dataset(graph):
@@ -272,6 +302,90 @@ def _move_downloads_to_distribution(result):
             result["schema:hasPart"] = remaining
         else:
             del result["schema:hasPart"]
+
+    return result
+
+
+def _wrap_loose_mediaobjects(result):
+    """Wrap loose MediaObject entries in schema:hasPart into a synthetic
+    DataDownload added to schema:distribution.
+
+    RO-Crate files appear in hasPart as schema:MediaObject (no DataDownload
+    type) when the source crate doesn't model an explicit archive. CDIF's
+    archive-distribution pattern expects them inside a DataDownload's
+    schema:hasPart. This function rebuilds that structure.
+
+    Behavior:
+    - Find MediaObject entries in top-level schema:hasPart that are NOT also
+      typed DataDownload.
+    - If none, do nothing.
+    - Otherwise create one synthetic DataDownload:
+        @id: <root @id>#distribution (or "#distribution" if root has no @id)
+        @type: ["schema:DataDownload"]
+        schema:hasPart: the loose MediaObjects
+        schema:contentUrl: the single MediaObject's @id, if exactly one
+                           loose MediaObject is being wrapped
+                           (multi-file archive: omitted — unknown URL)
+    - Append the synthetic DataDownload to schema:distribution.
+    - Remove the wrapped MediaObjects from top-level schema:hasPart.
+    """
+    if not isinstance(result, dict):
+        return result
+
+    has_part = result.get("schema:hasPart")
+    if not has_part:
+        return result
+    if isinstance(has_part, dict):
+        has_part = [has_part]
+
+    media_types = {"schema:MediaObject", "MediaObject",
+                   "http://schema.org/MediaObject"}
+
+    loose = []
+    keep = []
+    for item in has_part:
+        if not isinstance(item, dict):
+            keep.append(item)
+            continue
+        etype = item.get("@type", [])
+        if isinstance(etype, str):
+            etype = [etype]
+        is_media = bool(media_types.intersection(etype))
+        is_download = bool(DATADOWNLOAD_TYPES.intersection(etype))
+        if is_media and not is_download:
+            loose.append(item)
+        else:
+            keep.append(item)
+
+    if not loose:
+        return result
+
+    # Build the synthetic DataDownload
+    root_id = result.get("@id", "")
+    synthetic_id = (root_id + "#distribution") if root_id else "#distribution"
+    synthetic = {
+        "@id": synthetic_id,
+        "@type": ["schema:DataDownload"],
+        "schema:hasPart": loose,
+    }
+    if len(loose) == 1:
+        single_id = loose[0].get("@id")
+        if single_id:
+            synthetic["schema:contentUrl"] = single_id
+
+    # Append to existing distribution(s)
+    existing = result.get("schema:distribution", [])
+    if isinstance(existing, dict):
+        existing = [existing]
+    elif existing is None:
+        existing = []
+    result["schema:distribution"] = existing + [synthetic]
+
+    # Strip wrapped MediaObjects from top-level hasPart
+    if keep:
+        result["schema:hasPart"] = keep
+    else:
+        result.pop("schema:hasPart", None)
 
     return result
 
@@ -415,7 +529,7 @@ def _create_subject_of(result, original_doc, profile):
         del result["schema:includedInDataCatalog"]
 
     # Build the profile conformsTo URI
-    profile_uri = CDIF_PROFILES.get(profile, CDIF_PROFILES["complete"])
+    profile_uri = CDIF_PROFILES.get(profile, CDIF_PROFILES["core"])
 
     # Construct subjectOf
     subject_of = {
@@ -515,9 +629,11 @@ Examples:
     parser.add_argument("-v", "--verbose", action="store_true", help="Show progress")
     parser.add_argument(
         "--profile",
-        choices=["discovery", "complete"],
-        default="complete",
-        help="CDIF profile for conformsTo (default: complete)",
+        choices=["core", "discovery", "complete"],
+        default="core",
+        help="CDIF profile asserted in subjectOf/dcterms:conformsTo "
+             "(default: core — the minimal common subset; use --profile to "
+             "assert a richer profile)",
     )
     parser.add_argument(
         "--validate",
@@ -552,17 +668,33 @@ Examples:
             if args.schema:
                 schema_path = args.schema
             else:
-                # Try local sibling validation repo first, fall back to GitHub
+                # Per-profile schema lookup. The validation repo holds the
+                # Discovery and Complete validation schemas; the canonical
+                # cdifCore schema lives in the profile-core release repo
+                # (no CDIFCoreSchema.json in the validation repo today).
                 validation_dir = SCRIPT_DIR / ".." / ".." / "validation"
+                profile_core_dir = SCRIPT_DIR / ".." / ".." / "profile-core"
                 schema_filenames = {
+                    "core": "cdifCoreStructuredSchema.json",
                     "discovery": "CDIFDiscoverySchema.json",
                     "complete": "CDIFCompleteSchema.json",
                 }
                 filename = schema_filenames[args.profile]
-                local_path = (validation_dir / filename).resolve()
-                if local_path.exists():
-                    schema_path = str(local_path)
+                # core: prefer sibling profile-core; others: validation repo
+                if args.profile == "core":
+                    candidate_dirs = [profile_core_dir, validation_dir]
                 else:
+                    candidate_dirs = [validation_dir]
+                schema_path = None
+                for d in candidate_dirs:
+                    p = (d / filename).resolve()
+                    if p.exists():
+                        schema_path = str(p)
+                        break
+                if schema_path is None:
+                    # Last resort: fetch from the validation repo on GitHub.
+                    # For --profile core this will likely 404; pass --schema
+                    # explicitly in that case.
                     schema_path = (
                         "https://raw.githubusercontent.com/"
                         "Cross-Domain-Interoperability-Framework/validation/"
