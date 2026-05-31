@@ -3,7 +3,7 @@
 RO-Crate Conformance Validator for CDIF JSON-LD
 
 Transforms CDIF JSON-LD (compacted/nested) into RO-Crate form (flattened @graph)
-and validates against RO-Crate 1.1 structural requirements.
+and validates against RO-Crate 1.2 structural requirements.
 
 This is the inverse of FrameAndValidate.py: instead of framing @graph into a
 nested tree, it expands+flattens into @graph and validates RO-Crate constraints.
@@ -61,7 +61,7 @@ FAIL = "FAIL"
 
 def validate_rocrate(doc, verbose=False):
     """
-    Validate a document against RO-Crate 1.1 structural requirements.
+    Validate a document against RO-Crate 1.2 structural requirements.
 
     Returns a list of (level, check_number, description, detail) tuples.
     """
@@ -216,14 +216,14 @@ def validate_rocrate(doc, verbose=False):
     else:
         add(WARN, 12, "Cannot check license --root dataset not found")
 
-    # --- Check 13: @context references RO-Crate 1.1 context (SHOULD) ---
+    # --- Check 13: @context references RO-Crate 1.2 context (SHOULD) ---
     if has_context:
         ctx = doc["@context"]
         has_rocrate_ctx = _context_references_rocrate(ctx)
         if has_rocrate_ctx:
-            add(PASS, 13, "@context references RO-Crate 1.1 context")
+            add(PASS, 13, "@context references RO-Crate 1.2 context")
         else:
-            add(WARN, 13, "@context does not reference RO-Crate 1.1 context",
+            add(WARN, 13, "@context does not reference RO-Crate 1.2 context",
                 f"Expected: {ROCRATE_CONTEXT_URI}")
     else:
         add(WARN, 13, "Cannot check @context reference --@context missing")
@@ -232,7 +232,7 @@ def validate_rocrate(doc, verbose=False):
 
 
 def _context_references_rocrate(ctx):
-    """Check if the @context includes the RO-Crate 1.1 context URI."""
+    """Check if the @context includes the RO-Crate 1.2 context URI."""
     if isinstance(ctx, str):
         return ROCRATE_CONTEXT_URI in ctx
     if isinstance(ctx, list):
@@ -320,13 +320,32 @@ def validate_with_rocrate_validator(rocrate_dict, severity="REQUIRED"):
         return None
 
     sev = getattr(RocSeverity, severity.upper(), RocSeverity.REQUIRED)
-    settings = roc_services.ValidationSettings(
-        rocrate_uri=".",
-        profile_identifier="ro-crate-1.1",
-        requirement_severity=sev,
-        abort_on_first=False,
-    )
-    return roc_services.validate_metadata_as_dict(rocrate_dict, settings)
+    # Prefer the RO-Crate 1.2 profile; fall back to 1.1 if the installed
+    # rocrate-validator package is older than the 1.2-profile release.
+    for profile_id in ("ro-crate-1.2", "ro-crate-1.1"):
+        settings = roc_services.ValidationSettings(
+            rocrate_uri=".",
+            profile_identifier=profile_id,
+            requirement_severity=sev,
+            abort_on_first=False,
+        )
+        try:
+            return roc_services.validate_metadata_as_dict(rocrate_dict, settings)
+        except Exception as e:
+            # Only fall back if this looks like a missing-profile error;
+            # otherwise re-raise so real validation failures aren't masked.
+            msg = str(e).lower()
+            if profile_id == "ro-crate-1.2" and (
+                "profile" in msg and ("not found" in msg or "unknown" in msg
+                                      or "does not exist" in msg)
+            ):
+                print(
+                    "  NOTE: rocrate-validator does not have the ro-crate-1.2 "
+                    "profile; falling back to ro-crate-1.1.",
+                    file=sys.stderr,
+                )
+                continue
+            raise
 
 
 def print_rocrate_validator_results(result, verbose=False):
@@ -392,7 +411,7 @@ def print_results(results, verbose=False):
     passes = [r for r in results if r[0] == PASS]
 
     print(f"\n{'='*60}")
-    print(f"RO-Crate 1.1 Validation Results")
+    print(f"RO-Crate 1.2 Validation Results")
     print(f"{'='*60}")
 
     for level, num, desc, detail in results:
@@ -483,7 +502,7 @@ Examples:
             print(f"RO-Crate output written to: {args.output}")
 
         # --- Built-in structural checks ---
-        print("\nValidating against RO-Crate 1.1 requirements...")
+        print("\nValidating against RO-Crate 1.2 requirements...")
         results = validate_rocrate(rocrate, verbose=args.verbose)
         builtin_valid = print_results(results, verbose=args.verbose)
 

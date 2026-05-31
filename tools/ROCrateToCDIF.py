@@ -2,7 +2,7 @@
 """
 RO-Crate to CDIF JSON-LD Converter
 
-Converts an RO-Crate 1.1 JSON-LD document (flattened @graph) into a CDIF-compliant
+Converts an RO-Crate 1.2 JSON-LD document (flattened @graph) into a CDIF-compliant
 nested JSON-LD document suitable for validation against CDIF schemas.
 
 Key mappings performed:
@@ -48,8 +48,6 @@ CDIF_OUTPUT_CONTEXT = {
     "sf": "http://www.opengis.net/ont/sf#",
     "cdi": "http://ddialliance.org/Specification/DDI-CDI/1.0/RDF/",
     "csvw": "http://www.w3.org/ns/csvw#",
-    "ada": "https://ada.astromat.org/metadata/",
-    "xas": "https://ada.astromat.org/metadata/xas/",
     "nxs": "https://manual.nexusformat.org/classes/",
 }
 

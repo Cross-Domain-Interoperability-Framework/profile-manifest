@@ -2,7 +2,7 @@
 """
 CDIF JSON-LD to RO-Crate Converter
 
-Converts CDIF JSON-LD (compacted/nested) into RO-Crate 1.1 form (flattened @graph).
+Converts CDIF JSON-LD (compacted/nested) into RO-Crate 1.2 form (flattened @graph).
 
 This module can be used as a library (import convert_to_rocrate) or as a standalone
 CLI tool for conversion without validation.
@@ -26,11 +26,11 @@ from pyld import jsonld
 # Configure the requests-based document loader
 jsonld.set_document_loader(jsonld.requests_document_loader())
 
-# RO-Crate-compatible context: RO-Crate 1.1 base (schema.org terms) plus
+# RO-Crate-compatible context: RO-Crate 1.2 base (schema.org terms) plus
 # CDIF namespace prefixes AND explicit term mappings so that compaction
 # produces unprefixed property names (required by rocrate-validator).
 ROCRATE_CONTEXT = [
-    "https://w3id.org/ro/crate/1.1/context",
+    "https://w3id.org/ro/crate/1.2/context",
     {
         # --- Namespace prefixes ---
         "dcterms": "http://purl.org/dc/terms/",
@@ -41,8 +41,6 @@ ROCRATE_CONTEXT = [
         "cdi": "http://ddialliance.org/Specification/DDI-CDI/1.0/RDF/",
         "csvw": "http://www.w3.org/ns/csvw#",
         "time": "http://www.w3.org/2006/time#",
-        "ada": "https://ada.astromat.org/metadata/",
-        "xas": "https://ada.astromat.org/metadata/xas/",
         "nxs": "https://manual.nexusformat.org/classes/",
         "cdifq": "http://crossdomaininteroperability.org/cdifq/",
 
@@ -157,8 +155,8 @@ ROCRATE_CONTEXT = [
     }
 ]
 
-ROCRATE_CONFORMSTO_URI = "https://w3id.org/ro/crate/1.1"
-ROCRATE_CONTEXT_URI = "https://w3id.org/ro/crate/1.1/context"
+ROCRATE_CONFORMSTO_URI = "https://w3id.org/ro/crate/1.2"
+ROCRATE_CONTEXT_URI = "https://w3id.org/ro/crate/1.2/context"
 METADATA_DESCRIPTOR_ID = "ro-crate-metadata.json"
 ROOT_DATASET_ID = "./"
 DEFAULT_LICENSE_ID = "http://www.opengis.net/def/nil/OGC/0/missing"
@@ -167,9 +165,9 @@ DEFAULT_LICENSE_ID = "http://www.opengis.net/def/nil/OGC/0/missing"
 ROCRATE_DATA_TYPES = {"Dataset", "File", "MediaObject", "DataDownload"}
 
 # All CDIF-relevant namespace prefixes. Merged into the input document's
-# @context before expansion so that prefixed terms like prov:Activity or
-# xas:AnalysisEvent resolve to full IRIs even when the input omits them.
-# NOTE: schema MUST be http:// (not https://) to match the RO-Crate 1.1 context.
+# @context before expansion so that prefixed terms like prov:Activity
+# resolve to full IRIs even when the input omits them.
+# NOTE: schema MUST be http:// (not https://) to match the RO-Crate 1.2 context.
 CDIF_NAMESPACES = {
     "schema": "http://schema.org/",
     "dcterms": "http://purl.org/dc/terms/",
@@ -180,8 +178,6 @@ CDIF_NAMESPACES = {
     "cdi": "http://ddialliance.org/Specification/DDI-CDI/1.0/RDF/",
     "csvw": "http://www.w3.org/ns/csvw#",
     "time": "http://www.w3.org/2006/time#",
-    "ada": "https://ada.astromat.org/metadata/",
-    "xas": "https://ada.astromat.org/metadata/xas/",
     "nxs": "https://manual.nexusformat.org/classes/",
 }
 
@@ -397,7 +393,7 @@ def _ensure_haspart(graph):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Convert CDIF JSON-LD to RO-Crate 1.1 form',
+        description='Convert CDIF JSON-LD to RO-Crate 1.2 form',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

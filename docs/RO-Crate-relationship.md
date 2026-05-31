@@ -2,12 +2,12 @@
 
 ## Overview
 
-The [CDIFcomplete](https://github.com/usgin/metadataBuildingBlocks/tree/main/_sources/profiles/cdifProfiles/CDIFcomplete) and [adaProduct](https://github.com/usgin/metadataBuildingBlocks/tree/main/_sources/profiles/adaProfiles/adaProduct) building block profiles produce JSON-LD metadata that shares a common vocabulary foundation with [RO-Crate](https://www.researchobject.org/ro-crate/) (Research Object Crate). Both systems build on [schema.org](https://schema.org) types and properties to describe datasets, files, people, and organizations.
+The [CDIFcomplete](https://github.com/Cross-Domain-Interoperability-Framework/metadataBuildingBlocks/tree/main/_sources/profiles/cdifProfiles/CDIFcomplete) building block profile produces JSON-LD metadata that shares a common vocabulary foundation with [RO-Crate](https://www.researchobject.org/ro-crate/) (Research Object Crate). Both systems build on [schema.org](https://schema.org) types and properties to describe datasets, files, people, and organizations.
 
 This document describes the property-level correspondences, the structural differences, and the tools for converting between the two formats in both directions:
 
-- **`ConvertToROCrate.py`** -- CDIF/ADA JSON-LD → RO-Crate 1.1 `@graph` form
-- **`ROCrateToCDIF.py`** -- RO-Crate 1.1 `@graph` form → CDIF nested JSON-LD
+- **`ConvertToROCrate.py`** -- CDIF JSON-LD → RO-Crate 1.2 `@graph` form
+- **`ROCrateToCDIF.py`** -- RO-Crate 1.2 `@graph` form → CDIF nested JSON-LD
 - **`ValidateROCrate.py`** -- Validates RO-Crate structural conformance
 
 All tools are in the `tools/` directory of this repository.
@@ -24,15 +24,15 @@ RO-Crate is a community specification for packaging research data with structure
 
 See the [RO-Crate 1.2 specification](https://www.researchobject.org/ro-crate/specification/1.2/introduction.html) and [quick reference](https://www.researchobject.org/ro-crate/quick-reference) for details.
 
-## Property Mapping: CDIFcomplete / adaProduct to RO-Crate
+## Property Mapping: CDIFcomplete to RO-Crate
 
-Both profiles and RO-Crate use schema.org as their primary vocabulary, so many properties map directly. The table below shows how metadata from the CDIF/ADA profiles corresponds to RO-Crate Root Data Entity properties.
+CDIFcomplete and RO-Crate both use schema.org as their primary vocabulary, so many properties map directly. The table below shows how metadata from the CDIFcomplete profile corresponds to RO-Crate Root Data Entity properties.
 
 ### Root Data Entity (Dataset)
 
-| CDIF / ADA Property | RO-Crate Property | Notes |
+| CDIF Property | RO-Crate Property | Notes |
 |---|---|---|
-| `@type: ["schema:Dataset", ...]` | `@type: "Dataset"` | ADA adds `"schema:Product"`; RO-Crate requires `Dataset` |
+| `@type: ["schema:Dataset", ...]` | `@type: "Dataset"` | RO-Crate requires `Dataset` |
 | `schema:name` | `name` | Direct mapping |
 | `schema:description` | `description` | Direct mapping |
 | `schema:dateModified` | `datePublished` | RO-Crate requires `datePublished` (MUST); CDIF uses `dateModified`. Use `schema:datePublished` if present, fall back to `dateModified` |
@@ -55,20 +55,19 @@ Both profiles and RO-Crate use schema.org as their primary vocabulary, so many p
 
 ### Data Entities (Files)
 
-| CDIF / ADA Property | RO-Crate Property | Notes |
+| CDIF Property | RO-Crate Property | Notes |
 |---|---|---|
-| `@type` (e.g., `["ada:image", "schema:MediaObject"]`) | `@type: "File"` | RO-Crate uses `File` (alias for `MediaObject`); additional types can be kept |
+| `@type` (e.g., `["schema:MediaObject"]`) | `@type: "File"` | RO-Crate uses `File` (alias for `MediaObject`); additional types can be kept |
 | `schema:name` | `name` | Filename within the archive |
 | `schema:description` | `description` | Direct mapping |
 | `schema:encodingFormat` | `encodingFormat` | CDIF stores as array; RO-Crate expects single MIME string |
 | `schema:size` | `contentSize` | CDIF uses structured `QuantitativeValue`; RO-Crate expects byte count string |
 | `spdx:checksum` | -- | No direct RO-Crate equivalent; preserved as additional property |
-| `schema:additionalType` | `additionalType` | ADA component types can be preserved |
-| `componentType` | -- | ADA-specific detail; can be preserved as additional property |
+| `schema:additionalType` | `additionalType` | Domain-specific component types can be preserved |
 
 ### Contextual Entities (People, Organizations)
 
-| CDIF / ADA Property | RO-Crate Property | Notes |
+| CDIF Property | RO-Crate Property | Notes |
 |---|---|---|
 | `schema:Person` with `schema:name`, `schema:identifier` | `Person` with `name`, ORCID `@id` | RO-Crate prefers ORCID as `@id` rather than nested identifier |
 | `schema:Organization` with `schema:name` | `Organization` with `name`, ROR `@id` | RO-Crate prefers ROR identifier as `@id` |
@@ -124,8 +123,8 @@ RO-Crate puts files directly as top-level `File` entities in the `@graph`, refer
   "@id": "./",
   "@type": "Dataset",
   "hasPart": [
-    {"@id": "ALH84001_ADA_001.tif"},
-    {"@id": "ALH84001_ADA_methods.pdf"}
+    {"@id": "sample_001.tif"},
+    {"@id": "methods.pdf"}
   ]
 }
 ```
@@ -170,11 +169,11 @@ The converters map between this structure and the RO-Crate Metadata File Descrip
 pip install PyLD jsonschema
 ```
 
-The scripts require network access on first run to fetch the RO-Crate 1.1 context from `https://w3id.org/ro/crate/1.1/context`.
+The scripts require network access on first run to fetch the RO-Crate 1.2 context from `https://w3id.org/ro/crate/1.2/context`.
 
 ### ConvertToROCrate.py -- CDIF to RO-Crate
 
-Transforms CDIF/ADA JSON-LD (nested, `schema:`-prefixed) into RO-Crate 1.1 form (flat `@graph`, unprefixed schema.org terms).
+Transforms CDIF JSON-LD (nested, `schema:`-prefixed) into RO-Crate 1.2 form (flat `@graph`, unprefixed schema.org terms).
 
 ```bash
 # Convert and save
@@ -205,7 +204,7 @@ Input (nested CDIF JSON-LD with schema:-prefixed terms)
    (jsonld.flatten)       array with @id cross-references
   |
   v
-4. Compact             -- re-compact with the RO-Crate 1.1 context;
+4. Compact             -- re-compact with the RO-Crate 1.2 context;
    (jsonld.compact)       schema.org terms become unprefixed (name,
                           description); CDIF terms keep prefixes
                           (prov:, spdx:, cdi:, csvw:)
@@ -215,14 +214,14 @@ Input (nested CDIF JSON-LD with schema:-prefixed terms)
    (convert_to_rocrate)   entity; remap root Dataset @id to "./"
   |
   v
-Output (RO-Crate 1.1 @graph JSON-LD)
+Output (RO-Crate 1.2 @graph JSON-LD)
 ```
 
 Because the conversion uses standard JSON-LD expand/flatten/compact operations, the underlying RDF graph is preserved losslessly. The only additions are the RO-Crate metadata descriptor entity and the `"./"` root `@id` convention.
 
 ### ROCrateToCDIF.py -- RO-Crate to CDIF
 
-Converts an RO-Crate 1.1 document (flat `@graph`) into a CDIF-compliant nested JSON-LD document suitable for validation against CDIF schemas.
+Converts an RO-Crate 1.2 document (flat `@graph`) into a CDIF-compliant nested JSON-LD document suitable for validation against CDIF schemas.
 
 ```bash
 # Convert RO-Crate to CDIF
@@ -248,7 +247,7 @@ python tools/ROCrateToCDIF.py input-rocrate.jsonld -o output.json --validate --s
 #### How the RO-Crate → CDIF Conversion Works
 
 ```
-Input (RO-Crate 1.1 @graph JSON-LD)
+Input (RO-Crate 1.2 @graph JSON-LD)
   |
   v
 1. Expand              -- resolve all terms to full IRIs
@@ -292,13 +291,13 @@ The converter handles both CDIF distribution patterns correctly:
 
 1. **Multiple independent DataDownloads** (e.g., from Dataverse): In the RO-Crate, each file appears in `hasPart` as a separate entity with `@type: DataDownload` and its own `contentUrl`. The converter moves these into `schema:distribution` as separate DataDownload items.
 
-2. **Archive distribution with parts** (e.g., ADA packages): In the RO-Crate, the archive `DataDownload` entity references component `File`/`MediaObject` entities via `hasPart`. After framing, the converter preserves the archive structure -- a single `DataDownload` in `schema:distribution` with nested `schema:hasPart` containing the component `MediaObject` entries.
+2. **Archive distribution with parts** (e.g., a ZIP/TAR bundle whose component files are not independently accessible): In the RO-Crate, the archive `DataDownload` entity references component `File`/`MediaObject` entities via `hasPart`. After framing, the converter preserves the archive structure -- a single `DataDownload` in `schema:distribution` with nested `schema:hasPart` containing the component `MediaObject` entries.
 
 The converter also deduplicates: when framing causes the same entity to appear in both `schema:distribution` and top-level `schema:hasPart`, duplicates are removed from the top level.
 
 ### ValidateROCrate.py -- RO-Crate Structural Validator
 
-Validates an RO-Crate document (optionally converting from CDIF first) against RO-Crate 1.1 structural requirements.
+Validates an RO-Crate document (optionally converting from CDIF first) against RO-Crate 1.2 structural requirements.
 
 ```bash
 # Convert CDIF to RO-Crate form and validate
@@ -339,7 +338,7 @@ python tools/ValidateROCrate.py input.jsonld -v
 | 10 | WARN | Root dataset has `name` |
 | 11 | WARN | Root dataset has `description` |
 | 12 | WARN | Root dataset has `license` |
-| 13 | WARN | `@context` references the RO-Crate 1.1 context URL |
+| 13 | WARN | `@context` references the RO-Crate 1.2 context URL |
 
 ## RO-Crate Bundles → cdifComplete (Archive Distribution)
 
@@ -371,7 +370,7 @@ WRROC-to-CDIF conversion targets the **cdifProv** building block rather than cdi
 A complete round-trip demonstrating both conversions:
 
 ```bash
-# Start with CDIF metadata (e.g., an ADA archive distribution)
+# Start with CDIF metadata (e.g., an archive distribution)
 # Step 1: Convert CDIF → RO-Crate
 python tools/ConvertToROCrate.py metadata.json -o metadata-rocrate.json -v
 
@@ -395,7 +394,6 @@ python tools/ROCrateToCDIF.py metadata-rocrate.json -o metadata-roundtrip.json -
 | CDIF variable descriptions | variableMeasured entities with cdi: properties | Preserved with DDI-CDI typing |
 | CDIF physical mappings | cdi:hasPhysicalMapping on File entities | Preserved; not core RO-Crate but valid extension |
 | CSV-W tabular properties | csvw:delimiter, csvw:header, etc. on File entities | Preserved; CSV-W is recognized in RO-Crate context |
-| ADA componentType | -- | Domain-specific; not representable in core RO-Crate |
 
 Because both conversions use standard JSON-LD operations (expand/flatten/compact/frame), the underlying RDF graph is preserved losslessly. The only structural additions/removals are the RO-Crate metadata descriptor entity, the `"./"` root `@id` convention, and the CDIF `subjectOf` catalog record wrapper.
 
@@ -405,8 +403,8 @@ Because both conversions use standard JSON-LD operations (expand/flatten/compact
 - [RO-Crate Quick Reference](https://www.researchobject.org/ro-crate/quick-reference)
 - [RO-Crate Root Data Entity](https://www.researchobject.org/ro-crate/specification/1.2/root-data-entity.html)
 - [RO-Crate Data Entities](https://www.researchobject.org/ro-crate/specification/1.2/data-entities)
-- [RO-Crate Metadata](https://www.researchobject.org/ro-crate/specification/1.1/metadata.html)
-- [RO-Crate JSON-LD](https://www.researchobject.org/ro-crate/specification/1.1/appendix/jsonld.html)
+- [RO-Crate Metadata](https://www.researchobject.org/ro-crate/specification/1.2/metadata.html)
+- [RO-Crate JSON-LD](https://www.researchobject.org/ro-crate/specification/1.2/appendix/jsonld.html)
 - [CDIF Book: Schema.org Implementation](https://cross-domain-interoperability-framework.github.io/cdifbook/metadata/schemaorgimplementation.html)
 - [CDIF Validation Repository](https://github.com/Cross-Domain-Interoperability-Framework/validation)
 - [pyld JSON-LD Processor](https://github.com/digitalbazaar/pyld)
