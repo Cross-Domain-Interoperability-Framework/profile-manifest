@@ -1,10 +1,7 @@
 # CDIF Manifest Profile — Implementation Guide
 
-> **Draft.** This guide was auto-generated from the StructuredSchema. Edit freely — descriptions, ordering, and the introductory prose should be curated by hand.
 
-# Purpose and scope
-
-The **CDIF Manifest profile module** (`cdifManifest`) — see the source register description for the module's purpose. *(Replace this stub paragraph with a hand-written purpose statement.)*
+The **CDIF Manifest profile** (`cdifManifest`) — a simple profile to describe distributions that contain multiple files bundled in a single data download media object for distribution.
 
 # Conformance
 
@@ -52,7 +49,7 @@ Profile module for archive distributions. Marks the catalog record as conformant
 ### schema:subjectOf
 
 - **Cardinality:** Optional
-- **Content:** —
+- **Content:** — "dcterms:conformsTo" includes    "https://w3id.org/cdif/manifest/1.0"
 
 ### schema:distribution
 
@@ -61,28 +58,4 @@ Profile module for archive distributions. Marks the catalog record as conformant
 
 # Class Definitions
 
-## LanguageTaggedValue {#sec-languagetaggedvalue}
-
-An RDF literal value with a language tag, serialized as a JSON-LD value object. Inlined from skosConcept (the resolver does not preserve cross-file '#/$defs/...' fragment refs).
-
-### @value
-
-- **Cardinality:** Required
-- **Content:** string
-- **Description:** The text content.
-
-### @language
-
-- **Cardinality:** Optional
-- **Content:** string
-- **Description:** BCP 47 language tag (e.g. en, fr, de).
-
-## ConceptRef {#sec-conceptref}
-
-Reference (by URI) to a skos:Concept defined elsewhere. Used inside skos:broader / skos:narrower as the @id-reference alternative to an inline Concept.
-
-### @id
-
-- **Cardinality:** Required
-- **Content:** string
-- **Description:** URI of the referenced concept.
+TBD
