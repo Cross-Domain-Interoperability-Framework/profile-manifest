@@ -42,4 +42,4 @@ Active work for the 2026-06 review revision is on the `reviewRevision202606` bra
 
 ## License
 
-This work is dedicated to the public domain under [License](LICENSE).
+This work is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE).
