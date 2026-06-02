@@ -9,7 +9,7 @@
   "schema:name": "Minimal archived dataset",
   "schema:subjectOf": {
     "dcterms:conformsTo": [
-      { "@id": "https://w3id.org/cdif/manifest/1.0" }
+      { "@id": "https://w3id.org/cdif/manifest/1.1" }
     ]
   },
   "schema:distribution": [

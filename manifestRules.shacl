@@ -12,14 +12,14 @@ cdifd:CDIFArchiveHasPartShape a sh:NodeShape ;
             sh:minCount 1 ;
             sh:path schema:hasPart ] ;
     sh:target [ a sh:SPARQLTarget ;
-            sh:select """
-	  PREFIX schema: <http://schema.org/>
-	  SELECT DISTINCT ?this
-	    WHERE {
-	      ?dataset a schema:Dataset .
-	      ?dataset schema:distribution ?this .
-	      ?this a schema:DataDownload .
-	      ?this schema:hasPart ?part .
+            sh:select """\r
+	  PREFIX schema: <http://schema.org/>\r
+	  SELECT DISTINCT ?this\r
+	    WHERE {\r
+	      ?dataset a schema:Dataset .\r
+	      ?dataset schema:distribution ?this .\r
+	      ?this a schema:DataDownload .\r
+	      ?this schema:hasPart ?part .\r
 	    }""" ] .
 
 cdifd:CDIFDefinedTermShape a sh:NodeShape ;
@@ -130,18 +130,18 @@ cdifd:CDIFIdentifierTypeTermShape a sh:NodeShape ;
 
 cdifd:CDIFManifestConformsToShape a sh:NodeShape ;
     sh:property [ a sh:PropertyShape ;
-            sh:hasValue <https://w3id.org/cdif/manifest/1.0> ;
-            sh:message "Metadata record must declare conformance to the CDIF manifest profile (https://w3id.org/cdif/manifest/1.0)" ;
+            sh:hasValue <https://w3id.org/cdif/manifest/1.1> ;
+            sh:message "Metadata record must declare conformance to the CDIF manifest profile (https://w3id.org/cdif/manifest/1.1)" ;
             sh:path dcterms:conformsTo ] ;
     sh:target [ a sh:SPARQLTarget ;
-            sh:select """
-            PREFIX schema: <http://schema.org/>
-            SELECT ?this
-            WHERE {
-            ?this a schema:Dataset ;
-             schema:about ?parent ;
-             schema:additionalType "dcat:CatalogRecord" .
-            }
+            sh:select """\r
+            PREFIX schema: <http://schema.org/>\r
+            SELECT ?this\r
+            WHERE {\r
+            ?this a schema:Dataset ;\r
+             schema:about ?parent ;\r
+             schema:additionalType "dcat:CatalogRecord" .\r
+            }\r
         """ ] .
 
 cdifd:CDIFManifestShape a sh:NodeShape ;
@@ -150,16 +150,16 @@ cdifd:CDIFManifestShape a sh:NodeShape ;
             sh:path schema:distribution ;
             sh:severity sh:Warning ] ;
     sh:target [ a sh:SPARQLTarget ;
-            sh:select """
-       PREFIX schema: <http://schema.org/>
-            SELECT ?this
-            WHERE {
-              ?this a schema:Dataset .
-              MINUS {
-                ?this schema:about ?x .
-                ?this schema:additionalType "dcat:CatalogRecord" .
-              }
-            }
+            sh:select """\r
+       PREFIX schema: <http://schema.org/>\r
+            SELECT ?this\r
+            WHERE {\r
+              ?this a schema:Dataset .\r
+              MINUS {\r
+                ?this schema:about ?x .\r
+                ?this schema:additionalType "dcat:CatalogRecord" .\r
+              }\r
+            }\r
           """ ] .
 
 cdifd:dataCubeShape a sh:NodeShape ;

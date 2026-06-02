@@ -36,8 +36,8 @@ SCRIPT_DIR = Path(__file__).parent
 # Default is "core" because it is the minimal common subset — claiming only
 # core is the safest assertion in the absence of a stronger signal.
 CDIF_PROFILES = {
-    "core": "https://w3id.org/cdif/core/1.0",
-    "discovery": "https://w3id.org/cdif/discovery/1.0",
+    "core": "https://w3id.org/cdif/core/1.1",
+    "discovery": "https://w3id.org/cdif/discovery/1.1",
     "complete": "https://w3id.org/cdif/profiles/cdifComplete/1.0",
 }
 

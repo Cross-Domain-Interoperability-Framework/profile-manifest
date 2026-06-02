@@ -11,7 +11,7 @@ A resource conforms to the CDIF Manifest profile when its catalog record declare
 "schema:subjectOf": {
   "@type": ["schema:CreativeWork", "dcat:CatalogRecord"],
   "dcterms:conformsTo": [
-    "https://w3id.org/cdif/manifest/1.0"
+    "https://w3id.org/cdif/manifest/1.1"
   ]
 }
 ```
@@ -36,10 +36,10 @@ Validation is **open-world**: properties not described by the profile are allowe
 
 ## schema:Dataset {#sec-schema-dataset}
 
-Profile module for archive distributions. Marks the catalog record as conformant to the CDIF manifest spec (https://w3id.org/cdif/manifest/1.0) and lets schema:distribution items carry schema:hasPart describing the component files inside an archive (ZIP, etc.). The base schema:distribution anyOf [DataDownload, WebAPI] contributed by cdifCore is preserved — this BB only adds property constraints, no new anyOf branch. (Merged from the previous cdifProfile/cdifArchive BB, which held only the $defs for ArchivePart; everything now lives here.)
+Profile module for archive distributions. Marks the catalog record as conformant to the CDIF manifest spec (https://w3id.org/cdif/manifest/1.1) and lets schema:distribution items carry schema:hasPart describing the component files inside an archive (ZIP, etc.). The base schema:distribution anyOf [DataDownload, WebAPI] contributed by cdifCore is preserved — this BB only adds property constraints, no new anyOf branch. (Merged from the previous cdifProfile/cdifArchive BB, which held only the $defs for ArchivePart; everything now lives here.)
 
 ### schema:subjectOf
-- (required) conformance statement in the subjectOf/dcat:catalogRecord must include "dcterms:conformsTo" includes    "https://w3id.org/cdif/manifest/1.0"
+- (required) conformance statement in the subjectOf/dcat:catalogRecord must include "dcterms:conformsTo" includes    "https://w3id.org/cdif/manifest/1.1"
 
 ### schema:distribution
 If the DataDownload type is application/zip (might need more general way to identify bundled packages of files), then the DataDownload must have hasPart properties that are schema:MediaObject instances describing the contained files. 
