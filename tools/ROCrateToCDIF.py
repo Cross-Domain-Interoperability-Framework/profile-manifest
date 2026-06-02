@@ -38,7 +38,7 @@ SCRIPT_DIR = Path(__file__).parent
 CDIF_PROFILES = {
     "core": "https://w3id.org/cdif/core/1.1",
     "discovery": "https://w3id.org/cdif/discovery/1.1",
-    "complete": "https://w3id.org/cdif/profiles/cdifComplete/1.0",
+    "complete": "https://w3id.org/cdif/complete/1.1",
 }
 
 # Output context for CDIF compaction — uses prefixed namespaces
