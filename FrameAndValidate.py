@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
-"""
-CDIF Manifest Profile JSON-LD Framing and Validation Script
+# >>> CDIF-SYNC GENERATED >>>
+# GENERATED FILE -- DO NOT EDIT.
+# Synced from CDIF/validation/tools/FrameAndValidate.py (the normative source).
+# Edit there, then run:  python tools/sync_frameandvalidate.py --apply
+# src-sha256: 6be5b9094e905b4388b88e11f4e11b94114f6f46371f4b3046dee848514d87d1
+# <<< CDIF-SYNC GENERATED <<<
 
-Supports both the original schema and the 2026 schema with DDI-CDI and CSVW extensions.
+"""
+CDIF JSON-LD Framing and Validation Script
+
+Frames a CDIF JSON-LD document into a tree and validates it against a JSON
+Schema. Works for any CDIF profile: the schema and frame default to the single
+*Schema*.json / *-frame.jsonld found next to this script.
 
 Usage:
-    python FrameAndValidate.py <input-document.jsonld> [--output framed.json] [--validate] [--schema schema.json] [--frame frame.jsonld]
+    python FrameAndValidate.py <input.jsonld> [-o framed.json] [-v]
+                               [--schema schema.json] [--frame frame.jsonld]
 """
 
 import json
@@ -21,10 +31,11 @@ jsonld.set_document_loader(jsonld.requests_document_loader())
 
 SCRIPT_DIR = Path(__file__).parent
 
-# Properties that should always be arrays per the CDIF schema
-# Includes both original properties and 2026 DDI-CDI/CSVW additions
+# Properties that should always be arrays per the CDIF schemas. This is the
+# UNION across all CDIF profiles -- wrapping a property that is absent from a
+# given document is a harmless no-op, so one list serves every profile.
 ARRAY_PROPERTIES = [
-    # schema.org properties -- always wrapped to array at any nesting level
+    # schema.org properties -- wrapped to array at any nesting level
     'schema:contributor',
     'schema:distribution',
     'schema:license',
@@ -54,30 +65,48 @@ ARRAY_PROPERTIES = [
     'dqv:hasQualityMeasurement',
     # Dublin Core properties
     'dcterms:conformsTo',
-    # DDI-CDI properties (2026)
+    # DDI-CDI / CDIF data-description & data-structure properties (2026)
     'cdi:hasPhysicalMapping',
     'cdi:uses',
     'cdi:physicalDataType',
-    # CDIF Data Description array-valued properties (cdi:->cdif: migration 2026-05)
-    # NOTE: cdif:physicalDataType is intentionally NOT array-valued -- it is a
-    # single value (string, @id object reference, or DefinedTerm) everywhere.
-    'cdif:hasPhysicalMapping',
-    'cdif:uses',
     'cdi:function',
     'cdi:takesSentinelValuesFrom',
+    'cdi:statistic',
+    'cdif:hasPhysicalMapping',
+    'cdif:uses',
     'cdif:recommendedDataType',
     'cdif:isComposedOf',
     'cdif:has_Statistics',
     'cdif:has_CategoryStatistics',
     'cdif:appliesTo',
     'cdif:indexedBy',
-    'cdi:statistic',
+    'cdif:statistics',
+    # SKOS properties (codelist / conceptscheme profiles)
+    'skos:hasTopConcept',
+    'skos:inScheme',
+    'skos:broader',
+    'skos:narrower',
+    'skos:related',
+    'skos:broadMatch',
+    'skos:narrowMatch',
+    'skos:relatedMatch',
+    'skos:exactMatch',
+    'skos:closeMatch',
+    'skos:altLabel',
+    'skos:hiddenLabel',
+    'skos:note',
+    'skos:scopeNote',
+    'skos:changeNote',
+    'skos:editorialNote',
+    'skos:historyNote',
+    'skos:example',
 ]
 
-# Properties that are arrays only in specific contexts (not globally).
-# Handled via context-aware logic in remove_nulls_and_normalize().
-# - schema:measurementTechnique: array at root, anyOf[string,DefinedTerm] inside variableMeasured
-# - schema:encodingFormat: array on DataDownload, string on EntryPoint
+# Properties that are arrays only in specific contexts (not globally) are handled
+# via context-aware logic in remove_nulls_and_normalize():
+# - schema:measurementTechnique: array at root, scalar inside variableMeasured
+# - schema:encodingFormat: array on DataDownload/MediaObject, string on EntryPoint
+# - schema:propertyID / schema:alternateName: array inside variableMeasured items
 
 # Term mappings: unprefixed -> prefixed (to match schema expectations)
 TERM_MAPPINGS = {
@@ -149,12 +178,92 @@ def is_bare_id_reference(obj):
     return len(keys) == 1 and keys[0] == '@id'
 
 
+def _is_catalog_record(item):
+    """True if the item's schema:additionalType marks it as a catalog record.
+
+    The CDIF schema:subjectOf wrapper is itself @type=schema:Dataset (so the
+    Dataset frame matches it), but is distinguished by schema:additionalType
+    containing 'dcat:CatalogRecord'. The main-entity picker uses this to skip
+    the catalog-record entity."""
+    if not isinstance(item, dict):
+        return False
+    at = item.get('schema:additionalType')
+    if at is None:
+        return False
+    if isinstance(at, str):
+        at = [at]
+    return 'dcat:CatalogRecord' in at
+
+
+def _frame_root_types(frame):
+    """Return the set of compact @type tokens the frame is rooted on (e.g.
+    {'schema:Dataset'} or {'skos:ConceptScheme'}). Used to pick the main entity
+    from a framed @graph in a profile-agnostic way."""
+    if not isinstance(frame, dict):
+        return set()
+    t = frame.get('@type')
+    if t is None:
+        return set()
+    if isinstance(t, str):
+        t = [t]
+    out = set()
+    for v in t:
+        if not isinstance(v, str):
+            continue
+        out.add(v)
+        # also keep the local name so a full-IRI frame type matches a compact one
+        out.add(v.rsplit('/', 1)[-1].rsplit('#', 1)[-1])
+    return out
+
+
+def _type_tokens(item):
+    """Set of @type tokens (and their local names) on a framed node."""
+    t = item.get('@type') if isinstance(item, dict) else None
+    if t is None:
+        return set()
+    if isinstance(t, str):
+        t = [t]
+    out = set()
+    for v in t:
+        if isinstance(v, str):
+            out.add(v)
+            out.add(v.rsplit('/', 1)[-1].rsplit('#', 1)[-1])
+    return out
+
+
+def pick_main_entity(graph, frame):
+    """Choose the document's main entity from a framed @graph.
+
+    Profile-agnostic: prefer a node whose @type matches the frame's root type
+    (skipping catalog records), then a node with schema:distribution, then one
+    with schema:url, then the first non-catalog-record node."""
+    candidates = [it for it in graph
+                  if isinstance(it, dict) and not _is_catalog_record(it)]
+    if not candidates:
+        return None
+    # Dataset-rooted profiles: the main dataset is the one carrying a
+    # distribution, then one with a url (a bare related Dataset has neither).
+    for it in candidates:
+        if it.get('schema:distribution') is not None:
+            return it
+    for it in candidates:
+        if it.get('schema:url') is not None:
+            return it
+    # Fallback (e.g. SKOS ConceptScheme, which has neither): match the frame root.
+    root_types = _frame_root_types(frame)
+    if root_types:
+        for it in candidates:
+            if _type_tokens(it) & root_types:
+                return it
+    return candidates[0]
+
+
 def remove_nulls_and_normalize(obj, parent_key=None):
     """
     Post-process the framed output to match schema expectations:
     1. Remove null values (framing adds null for missing optional properties)
     2. Rename unprefixed terms to prefixed versions
-    3. Wrap single values in arrays where schema expects arrays
+    3. Wrap single values in arrays where the schema expects arrays
     4. Convert bare @id references to strings for identifier fields
     """
     if isinstance(obj, list):
@@ -252,7 +361,7 @@ def remove_nulls_and_normalize(obj, parent_key=None):
 
 
 def frame_cdif_document(doc_path, frame_path=None):
-    """Frame a CDIF JSON-LD document using three-step approach"""
+    """Frame a CDIF JSON-LD document using the three-step expand/frame/compact approach."""
     print(f"Loading document: {doc_path}")
     with open(doc_path, 'r', encoding='utf-8') as f:
         doc = json.load(f)
@@ -265,12 +374,12 @@ def frame_cdif_document(doc_path, frame_path=None):
     else:
         frame = FRAME_TEMPLATE
 
-    # Merge contexts bidirectionally so both expansion and compaction work
-    # with all prefixes from either source:
-    # 1. Frame prefixes → document context: ensures prefixed terms in the
-    #    document expand to full IRIs even if the document's context is incomplete.
-    # 2. Document prefixes → frame context: ensures domain-specific prefixes
-    #    compact correctly without requiring every possible prefix in the frame.
+    # Merge contexts bidirectionally so both expansion and compaction work with
+    # all prefixes from either source:
+    # 1. Frame prefixes -> document context: prefixed terms in the document
+    #    expand to full IRIs even if the document's own context is incomplete.
+    # 2. Document prefixes -> frame context: domain-specific prefixes (ada:, xas:,
+    #    skos:, ...) compact correctly without requiring every prefix in the frame.
     if frame_path and isinstance(frame, dict) and '@context' in frame:
         doc_ctx = doc.get('@context', {})
         if isinstance(doc_ctx, dict):
@@ -296,28 +405,33 @@ def frame_cdif_document(doc_path, frame_path=None):
         print("Compacting with output context...")
         framed = jsonld.compact(framed, OUTPUT_CONTEXT)
 
-    # Step 4: Extract main dataset from @graph if present
+    # Step 4: Extract the main entity from @graph if present
     result = framed
     if '@graph' in framed and isinstance(framed['@graph'], list):
-        # Find the main Dataset object - the one with schema:distribution or schema:url
-        dataset = None
-        for item in framed['@graph']:
-            # Check if this item has distribution (indicates it's the main dataset, not metadata record)
-            if item.get('schema:distribution') is not None:
-                dataset = item
-                break
-            # Fallback: check for schema:url
-            if item.get('schema:url') is not None and dataset is None:
-                dataset = item
-
-        if dataset:
-            result = {'@context': framed.get('@context'), **dataset}
+        entity = pick_main_entity(framed['@graph'], frame)
+        if entity:
+            result = {'@context': framed.get('@context'), **entity}
 
     # Step 5: Post-process to remove nulls, normalize terms and array properties
     print("Post-processing output...")
     result = remove_nulls_and_normalize(result)
 
     return result
+
+
+def _auto_default(patterns, label):
+    """Return the single file in SCRIPT_DIR matching any of the glob patterns,
+    or None if there is not exactly one (caller then requires an explicit arg)."""
+    hits = []
+    seen = set()
+    for pat in patterns:
+        for p in sorted(SCRIPT_DIR.glob(pat)):
+            if p.name not in seen:
+                seen.add(p.name)
+                hits.append(p)
+    if len(hits) == 1:
+        return str(hits[0])
+    return None
 
 
 def validate_against_schema(framed, schema_path):
@@ -338,35 +452,36 @@ def validate_against_schema(framed, schema_path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='CDIF Manifest Profile JSON-LD Framing and Validation Tool',
+        description='CDIF JSON-LD Framing and Validation Tool',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Frame and print output
+  # Frame and print output (schema/frame auto-detected from this directory)
   python FrameAndValidate.py my-metadata.jsonld
 
-  # Frame with custom frame and save output
-  python FrameAndValidate.py my-metadata.jsonld --frame cdifManifest-frame.jsonld -o framed.json
+  # Frame with explicit frame and save output
+  python FrameAndValidate.py my-metadata.jsonld --frame cdifCore-frame.jsonld -o framed.json
 
-  # Validate against Data Description Profile schema
-  python FrameAndValidate.py my-metadata.jsonld --frame cdifManifest-frame.jsonld -v --schema cdifManifestStructuredSchema.json
-
-  # Full workflow with Data Description Profile files
-  python FrameAndValidate.py my-metadata.jsonld --frame cdifManifest-frame.jsonld -o framed.json -v --schema cdifManifestStructuredSchema.json
+  # Validate against an explicit schema
+  python FrameAndValidate.py my-metadata.jsonld -v --schema cdifCoreStructuredSchema.json
 """
     )
     parser.add_argument('input', help='Input JSON-LD file to process')
     parser.add_argument('-o', '--output', help='Write framed output to file')
     parser.add_argument('-v', '--validate', action='store_true', help='Validate against JSON Schema')
-    parser.add_argument('--schema', default=str(SCRIPT_DIR / 'cdifManifestStructuredSchema.json'),
-                        help='Path to JSON Schema (default: cdifManifestStructuredSchema.json)')
-    parser.add_argument('--frame', default=str(SCRIPT_DIR / 'cdifManifest-frame.jsonld'),
-                        help='Path to JSON-LD frame (default: cdifManifest-frame.jsonld)')
+    parser.add_argument('--schema', default=None,
+                        help='Path to JSON Schema (default: the single *Schema*.json beside this script)')
+    parser.add_argument('--frame', default=None,
+                        help='Path to JSON-LD frame (default: the single *-frame.jsonld beside this script)')
 
     args = parser.parse_args()
 
+    # Resolve auto-detected defaults when not given explicitly.
+    schema_path = args.schema or _auto_default(['*Schema*.json', '*schema*.json'], 'schema')
+    frame_path = args.frame or _auto_default(['*-frame.jsonld', '*frame*.jsonld'], 'frame')
+
     try:
-        framed = frame_cdif_document(args.input, args.frame)
+        framed = frame_cdif_document(args.input, frame_path)
 
         if args.output:
             with open(args.output, 'w', encoding='utf-8') as f:
@@ -377,8 +492,12 @@ Examples:
             print(json.dumps(framed, indent=2))
 
         if args.validate:
+            if not schema_path:
+                print("Error: no schema given and could not auto-detect a single "
+                      "*Schema*.json beside this script; pass --schema.", file=sys.stderr)
+                sys.exit(2)
             print("\nValidating against schema...")
-            result = validate_against_schema(framed, args.schema)
+            result = validate_against_schema(framed, schema_path)
 
             if result['valid']:
                 print("Validation PASSED")
