@@ -38,6 +38,7 @@ ARRAY_PROPERTIES = [
     'schema:spatialCoverage',
     'schema:temporalCoverage',
     'schema:relatedLink',
+    'schema:hasPart',
     'schema:publishingPrinciples',
     'schema:potentialAction',
     'schema:httpMethod',
@@ -217,8 +218,9 @@ def remove_nulls_and_normalize(obj, parent_key=None):
             if mt is not None and not isinstance(mt, list):
                 result['schema:measurementTechnique'] = [mt]
 
-        # schema:encodingFormat: array on DataDownload, string on EntryPoint
-        if 'schema:DataDownload' in type_list:
+        # schema:encodingFormat: array on DataDownload and on MediaObject
+        # (archive member files in schema:hasPart), string on EntryPoint
+        if 'schema:DataDownload' in type_list or 'schema:MediaObject' in type_list:
             ef = result.get('schema:encodingFormat')
             if ef is not None and not isinstance(ef, list):
                 result['schema:encodingFormat'] = [ef]

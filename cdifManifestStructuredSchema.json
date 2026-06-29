@@ -102,17 +102,30 @@
                           }
                         },
                         "schema:about": {
-                          "type": "array",
-                          "description": "For metadata sidecar files, references the data file this metadata describes.",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "@id": {
-                                "type": "string",
-                                "description": "Reference to the @id of the data file described by this sidecar."
+                          "description": "For metadata sidecar files, references the data file this metadata describes. May be a single reference object or an array of them.",
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "@id": {
+                                  "type": "string",
+                                  "description": "Reference to the @id of the data file described by this sidecar."
+                                }
+                              }
+                            },
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "@id": {
+                                    "type": "string",
+                                    "description": "Reference to the @id of the data file described by this sidecar."
+                                  }
+                                }
                               }
                             }
-                          }
+                          ]
                         },
                         "spdx:checksum": {
                           "type": "object",

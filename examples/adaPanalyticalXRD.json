@@ -319,6 +319,9 @@
       },
       {
         "@id": "https://w3id.org/cdif/data_description/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/manifest/1.1"
       }
     ],
     "schema:description": "Simplified to DataDescription profile from validation MetadataExamples. Provenance extensions removed. Structural fixes applied for CDIF conformance."
