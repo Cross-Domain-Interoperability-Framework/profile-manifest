@@ -3,7 +3,7 @@
 # GENERATED FILE -- DO NOT EDIT.
 # Synced from CDIF/validation/tools/FrameAndValidate.py (the normative source).
 # Edit there, then run:  python tools/sync_frameandvalidate.py --apply
-# src-sha256: 916675e325df0ae0e8e19625bd642bf2b19294397be910b4b59bee00c550b7ab
+# src-sha256: 16ff65c25c7aa5fc50fbf301ec317d5c5cb5b1649bafd4eca1a4a08dbac56a06
 # <<< CDIF-SYNC GENERATED <<<
 
 """
@@ -297,6 +297,15 @@ def remove_nulls_and_normalize(obj, parent_key=None):
             # (framing compacts single-element arrays to strings)
             if new_key == '@type' and isinstance(new_value, str):
                 new_value = [new_value]
+
+            # Re-expand compacted cdif: IRI *values* (e.g. conformsTo profile URIs
+            # like cdif:data_description/1.1) back to the full https://w3id.org/cdif/
+            # form the schemas' const/contains constraints require. Framing compacts
+            # these when the source document declares a cdif: prefix in its @context.
+            # Only @id values are touched; cdif:-prefixed property *keys*
+            # (cdif:hasPhysicalMapping, ...) are left compact as the schema expects.
+            if new_key == '@id' and isinstance(new_value, str) and new_value.startswith('cdif:'):
+                new_value = 'https://w3id.org/cdif/' + new_value[len('cdif:'):]
 
             # Convert bare @id references to strings for identifier fields
             if new_key == 'schema:identifier' and is_bare_id_reference(new_value):
