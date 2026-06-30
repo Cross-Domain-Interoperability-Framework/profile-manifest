@@ -1,5 +1,4 @@
 @prefix cdi: <http://ddialliance.org/Specification/DDI-CDI/1.0/RDF/> .
-@prefix cdif: <https://cdif.org/0.1/> .
 @prefix cdifd: <https://cdif.org/validation/0.1/shacl#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -12,14 +11,14 @@ cdifd:CDIFArchiveHasPartShape a sh:NodeShape ;
             sh:minCount 1 ;
             sh:path schema:hasPart ] ;
     sh:target [ a sh:SPARQLTarget ;
-            sh:select """\r
-	  PREFIX schema: <http://schema.org/>\r
-	  SELECT DISTINCT ?this\r
-	    WHERE {\r
-	      ?dataset a schema:Dataset .\r
-	      ?dataset schema:distribution ?this .\r
-	      ?this a schema:DataDownload .\r
-	      ?this schema:hasPart ?part .\r
+            sh:select """
+	  PREFIX schema: <http://schema.org/>
+	  SELECT DISTINCT ?this
+	    WHERE {
+	      ?dataset a schema:Dataset .
+	      ?dataset schema:distribution ?this .
+	      ?this a schema:DataDownload .
+	      ?this schema:hasPart ?part .
 	    }""" ] .
 
 cdifd:CDIFDefinedTermShape a sh:NodeShape ;
@@ -134,14 +133,14 @@ cdifd:CDIFManifestConformsToShape a sh:NodeShape ;
             sh:message "Metadata record must declare conformance to the CDIF manifest profile (https://w3id.org/cdif/manifest/1.1)" ;
             sh:path dcterms:conformsTo ] ;
     sh:target [ a sh:SPARQLTarget ;
-            sh:select """\r
-            PREFIX schema: <http://schema.org/>\r
-            SELECT ?this\r
-            WHERE {\r
-            ?this a schema:Dataset ;\r
-             schema:about ?parent ;\r
-             schema:additionalType "dcat:CatalogRecord" .\r
-            }\r
+            sh:select """
+            PREFIX schema: <http://schema.org/>
+            SELECT ?this
+            WHERE {
+            ?this a schema:Dataset ;
+             schema:about ?parent ;
+             schema:additionalType "dcat:CatalogRecord" .
+            }
         """ ] .
 
 cdifd:CDIFManifestShape a sh:NodeShape ;
@@ -150,23 +149,23 @@ cdifd:CDIFManifestShape a sh:NodeShape ;
             sh:path schema:distribution ;
             sh:severity sh:Warning ] ;
     sh:target [ a sh:SPARQLTarget ;
-            sh:select """\r
-       PREFIX schema: <http://schema.org/>\r
-            SELECT ?this\r
-            WHERE {\r
-              ?this a schema:Dataset .\r
-              MINUS {\r
-                ?this schema:about ?x .\r
-                ?this schema:additionalType "dcat:CatalogRecord" .\r
-              }\r
-            }\r
+            sh:select """
+       PREFIX schema: <http://schema.org/>
+            SELECT ?this
+            WHERE {
+              ?this a schema:Dataset .
+              MINUS {
+                ?this schema:about ?x .
+                ?this schema:additionalType "dcat:CatalogRecord" .
+              }
+            }
           """ ] .
 
 cdifd:dataCubeShape a sh:NodeShape ;
     sh:message "Data cube nodes (cdi:StructuredDataSet) should have physical mappings." ;
     sh:property [ sh:message "A StructuredDataSet should have physical mappings (cdif:hasPhysicalMapping) linking variables to their physical representation." ;
             sh:minCount 1 ;
-            sh:path cdif:hasPhysicalMapping ;
+            sh:path <https://w3id.org/cdif/hasPhysicalMapping> ;
             sh:severity sh:Warning ] ;
     sh:targetClass cdi:StructuredDataSet .
 
@@ -174,12 +173,12 @@ cdifd:physicalMappingShape a sh:NodeShape ;
     sh:message "Physical mapping nodes should link to their corresponding variable definition." ;
     sh:property [ sh:message "A physical mapping should reference the variable it formats (cdif:formats_InstanceVariable)." ;
             sh:minCount 1 ;
-            sh:path cdif:formats_InstanceVariable ;
+            sh:path <https://w3id.org/cdif/formats_InstanceVariable> ;
             sh:severity sh:Warning ] ;
     sh:target [ a sh:SPARQLTarget ;
             sh:select """
             PREFIX cdi: <http://ddialliance.org/Specification/DDI-CDI/1.0/RDF/>
-            PREFIX cdif: <https://cdif.org/0.1/>
+            PREFIX cdif: <https://w3id.org/cdif/>
             SELECT ?this
             WHERE {
                 ?parent cdif:hasPhysicalMapping ?this .
@@ -193,7 +192,7 @@ cdifd:tabularDataShape a sh:NodeShape ;
                         sh:path cdi:isFixedWidth ] ] ) ;
     sh:property [ sh:message "A TabularTextDataSet must have physical mappings (cdif:hasPhysicalMapping) linking variables to columns (required by the JSON Schema)." ;
             sh:minCount 1 ;
-            sh:path cdif:hasPhysicalMapping ;
+            sh:path <https://w3id.org/cdif/hasPhysicalMapping> ;
             sh:severity sh:Violation ] ;
     sh:targetClass cdi:TabularTextDataSet .
 

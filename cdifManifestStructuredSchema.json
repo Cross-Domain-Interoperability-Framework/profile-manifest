@@ -102,30 +102,17 @@
                           }
                         },
                         "schema:about": {
-                          "description": "For metadata sidecar files, references the data file this metadata describes. May be a single reference object or an array of them.",
-                          "anyOf": [
-                            {
-                              "type": "object",
-                              "properties": {
-                                "@id": {
-                                  "type": "string",
-                                  "description": "Reference to the @id of the data file described by this sidecar."
-                                }
-                              }
-                            },
-                            {
-                              "type": "array",
-                              "items": {
-                                "type": "object",
-                                "properties": {
-                                  "@id": {
-                                    "type": "string",
-                                    "description": "Reference to the @id of the data file described by this sidecar."
-                                  }
-                                }
+                          "type": "array",
+                          "description": "For metadata sidecar files, references the data file this metadata describes.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "@id": {
+                                "type": "string",
+                                "description": "Reference to the @id of the data file described by this sidecar."
                               }
                             }
-                          ]
+                          }
                         },
                         "spdx:checksum": {
                           "type": "object",
@@ -228,6 +215,7 @@
                                             }
                                           },
                                           {
+                                            "description": "A SKOS concept identified by URI, a schema:DefinedTerm, or an inline cdif:Concept. Shared shape used wherever a CDIF property carries either a controlled-vocabulary reference or an inline concept definition.",
                                             "anyOf": [
                                               {
                                                 "type": "object",
@@ -262,7 +250,7 @@
                                                         "type": "string"
                                                       },
                                                       {
-                                                        "description": "Properties for a schema.org identifier (schema:PropertyValue pattern).\n\n**Union-type policy:** In CDIF profile UML models an attribute typed as\nschema:Identifier / schema:PropertyValue is represented by a single attribute\nof that class type. The JSON Schema implementation permits the property value\nto be EITHER a plain string (interpreted as the bare identifier value) OR a\nfull schema:PropertyValue object (with explicit @type, propertyID, value).\nConsumers should accept either form.\n",
+                                                        "description": "Properties for a schema.org identifier (schema:PropertyValue pattern).\n**Union-type policy:** In CDIF profile UML models an attribute typed as\nschema:Identifier / schema:PropertyValue is represented by a single attribute\nof that class type. The JSON Schema implementation permits the property value\nto be EITHER a plain string (interpreted as the bare identifier value) OR a\nfull schema:PropertyValue object (with explicit @type, propertyID, value).\nConsumers should accept either form.\n",
                                                         "type": "object",
                                                         "properties": {
                                                           "@type": {
@@ -511,8 +499,7 @@
                                                 },
                                                 "required": [
                                                   "@type",
-                                                  "skos:prefLabel",
-                                                  "skos:notation"
+                                                  "skos:prefLabel"
                                                 ]
                                               }
                                             ]
@@ -744,6 +731,7 @@
                                         }
                                       },
                                       {
+                                        "description": "A SKOS concept identified by URI, a schema:DefinedTerm, or an inline cdif:Concept. Shared shape used wherever a CDIF property carries either a controlled-vocabulary reference or an inline concept definition.",
                                         "anyOf": [
                                           {
                                             "type": "object",
@@ -778,7 +766,7 @@
                                                     "type": "string"
                                                   },
                                                   {
-                                                    "description": "Properties for a schema.org identifier (schema:PropertyValue pattern).\n\n**Union-type policy:** In CDIF profile UML models an attribute typed as\nschema:Identifier / schema:PropertyValue is represented by a single attribute\nof that class type. The JSON Schema implementation permits the property value\nto be EITHER a plain string (interpreted as the bare identifier value) OR a\nfull schema:PropertyValue object (with explicit @type, propertyID, value).\nConsumers should accept either form.\n",
+                                                    "description": "Properties for a schema.org identifier (schema:PropertyValue pattern).\n**Union-type policy:** In CDIF profile UML models an attribute typed as\nschema:Identifier / schema:PropertyValue is represented by a single attribute\nof that class type. The JSON Schema implementation permits the property value\nto be EITHER a plain string (interpreted as the bare identifier value) OR a\nfull schema:PropertyValue object (with explicit @type, propertyID, value).\nConsumers should accept either form.\n",
                                                     "type": "object",
                                                     "properties": {
                                                       "@type": {
@@ -1027,8 +1015,7 @@
                                             },
                                             "required": [
                                               "@type",
-                                              "skos:prefLabel",
-                                              "skos:notation"
+                                              "skos:prefLabel"
                                             ]
                                           }
                                         ]
