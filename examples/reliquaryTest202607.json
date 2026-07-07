@@ -1,0 +1,171 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "prov": "http://www.w3.org/ns/prov#"
+  },
+  "@id": "https://example.com/99152/morbcitationlist",
+  "@type": ["schema:Collection"],
+  "schema:additionaltype": ["citation list"],
+  "schema:name": "Citations to publications reporting MORB chemistry",
+  "schema:description": "this record provide a list of citations for publications used in the compilation of mid ocean ridge basalt chemistry",
+  "schema:identifier": "https://example.com/99152/morbcitationlist",
+  "schema:license": ["https://spdx.org/licenses/CC0-1.0.html"],
+  "schema:creator": {
+    "@list": [
+      {
+        "@type": ["schema:Person"],
+        "schema:name": "Unknown creator"
+      }
+    ]
+  },
+  "schema:dateModified": "2026-07-07",
+  "schema:url": "https://portal.earthchem.org/refoutput.php?references=View+All+References&navdat=true&georoc=true&usgs=true&seddb=true&metpetdb=true&earthchemdb=true&darwin=true&pkey=4322550",
+  "schema:hasPart": [
+    {
+      "@type": "schema:Article",
+      "schema:name": "VOLATILE ABUNDANCES IN BASALTIC GLASSES FROM SEAMOUNTS FLANKING THE EAST PACIFIC RISE AT 21 DEGREE N AND 12-14 DEGREE N",
+      "schema:citation": "AGGREY, K E; MUENOW, D W; BATIZA, R, 1988, GEOCHIM COSMOCHIM ACTA"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "THE SPECTRA OF ISOTOPIC HETEROGENEITIES ALONG THE MID-ATLANTIC RIDGE",
+      "schema:citation": "AGRANIER, A; BLICHERT-TOFT, J; GRAHAM, D W; DEBAILLE, V; SCHIANO, P; ALBAREDE, F, 2005, EARTH PLANET SCI LETT"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "PETROLOGY AND CHEMISTRY OF LAVAS FROM SEAMOUNTS FLANKING THE EAST PACIFIC RISE AXIS, 21 DEG N: IMPLICATIONS CONCERNING THE MANTLE SOURCE COMPOSITION FOR BOTH SEAMOUNT AND ADJACENT EPR LAVAS",
+      "schema:citation": "ALLAN, J F; BATIZA, R; LONSDALE, P F, 1987, AGU GEOPHYS MONOGR"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "THE STABLE STRONTIUM ISOTOPIC COMPOSITION OF OCEAN ISLAND BASALTS, MID-OCEAN RIDGE BASALTS, AND KOMATIITES",
+      "schema:citation": "AMSELLEM, E; MOYNIER, F; DAY, J M D; MOREIRA, M; PUCHTEL, I S; TENG, F-Z, 2018, CHEMICAL GEOLOGY"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "THE TERRESTRIAL URANIUM ISOTOPE CYCLE",
+      "schema:citation": "ANDERSEN, M; ELLIOTT, T; FREYMUTH, H; SIMS, K W W; NIU, Y; KELLEY, K A, 2015, NATURE"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "NATURE OF THE DEPLETED UPPER MANTLE BENEATH THE ATLANTIC:  EVDIENCE FROM Hf ISOTOPES IN NORMAL MID-OCEAN RIDGE BASALTS FROM 79 DEG N TO 55 DEG S",
+      "schema:citation": "ANDRES, M; BLICHERT-TOFT, J; SCHILLING, J-G, 2004, EARTH PLANET SCI LETT"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "HAFNIUM ISOTOPES IN BASALTS FROM THE SOUTHERN MID-ATLANTIC RIDGE FROM 40 DEG S TO 55 DEG S: DISCOVERY AND SHONA PLUME-RIDGE INTERACTIONS AND THE ROLE OF RECYCLED SEDIMENTS",
+      "schema:citation": "ANDRES, M; BLICHERT-TOFT, J; SCHILLING, J-G, 2002, GEOCHEM GEOPHYS GEOSYST"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "TUNGSTEN GEOCHEMISTRY AND IMPLICATIONS FOR UNDERSTANDING THE EARTHS INTERIOR",
+      "schema:citation": "AREVALO JR, R; MCDONOUGH, W F, 2008, EARTH PLANET SCI LETT"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "THE K/U RATIO OF THE SILICATE EARTH: INSIGHTS INTO MANTLE COMPOSITION, STRUCTURE AND THERMAL EVOLUTION",
+      "schema:citation": "AREVALO JR, R; MCDONOUGH, W F; LUONG, M, 2009, EARTH PLANET SCI LETT"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "EVOLUTION OF MOJAVIAN MANTLE LITHOSPHERE INFLUENCED BY FARALLON PLATE SUBDUCTION: EVIDENCE FROM HF AND ND ISOTOPES IN PERIDOTITE XENOLITHS FROM DISH HILL, CA",
+      "schema:citation": "ARMYTAGE, R. M. G.; BRANDON, A. D.; ANDREASEN, R.; LAPEN, T. J., 2015, GEOCHIM. COSMOCHIM. ACTA"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "OSMIUM ISOTOPE EVIDENCE FOR EARLY TO MIDDLE PROTEROZOIC MANTLE LITHOSPHERE STABILIZATION AND CONCOMITANT PRODUCTION OF JUVENILE CRUST IN DISH HILL, CA PERIDOTITE XENOLITHS",
+      "schema:citation": "ARMYTAGE, R. M. G.; BRANDON, A. D.; PESLIER, A. H.; LAPEN, T. J., 2014, GEOCHIM. COSMOCHIM. ACTA"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "HAFNIUM ISOTOPIC STUDIES OF THE CAMEROON LINE AND NEW HIMU PARADOXES",
+      "schema:citation": "BALLENTINE, C. J.; LEE, DER-CHUEN; HALLIDAY, A. N., 1997, CHEM. GEOL."
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "GEOLOGY OF THE NORTHERN END OF THE JUAN DE FUCA RIDGE AND SEA-FLOOR SPREADING",
+      "schema:citation": "BARR, S; CHASE, R L, 1974, CAN J EARTH SCI"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "HIGH PRESSURE PHASE RELATIONS OF PRIMITIVE HIGH-ALUMINA BASALTS FROM MEDICINE LAKE VOLCANO, NORTHERN CALIFORNIA",
+      "schema:citation": "BARTELS, K. S.; KINZLER, R. J.; GROVE, T. L., 1991, CONTRIB. MINERAL. PETROL."
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "THE ORIGIN AND PETROLOGY OF YOUNG OCEANIC CENTRAL VOLCANOES: ARE MOST THOLEIITIC RATHER THAN ALKALIC?",
+      "schema:citation": "BATIZA, R, 1980, GEOLOGY"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "TRACE ELEMENT CHARACTERISTICS OF LEG 61 BASALTS",
+      "schema:citation": "BATIZA, R., 1981, INIT. REP. DEEP SEA DRILL. PROJ."
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "CHEMISTRY OF DEEP (3500-5600 M) PACIFIC MORB--WHY IS THE PACIFIC ANOMALOUS?",
+      "schema:citation": "BATIZA, R; HEKINIAN, R; BIDEAU, D; FRANCHETEAU, J, 1995, GEOPHYS RES LETT"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "MAJOR ELEMENT CHEMISTRY OF BASALT GLASSES DREDGED FROM YOUNG ISOLATED VOLCANOES AND THE EAST PACIFIC RISE, 10 DEGREE - 14 DEGREE N",
+      "schema:citation": "BATIZA, R; O'HEARN, T, 1982, ARQUIPELAGO"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "SUMMARY AND INDEX TO PETROLOGIC AND GEOCHEMICAL STUDIES OF LEG 61 BASALTS",
+      "schema:citation": "BATIZA, R.; SHCHEKA, S. A.; TOKUYAMA, H.; MÃœHLENBACHS, K.; VALLIER, T. L.; LEE-WONG, F.; SEIFERT, R.; WINDOM, K.; BOOK, P.; FUJII, T., 1981, INIT. REP. DEEP SEA DRILL. PROJ."
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "THE CALDWELL GROUP LAVAS OF SOUTHERN QUEBEC: MORB-LIKE THOLEIITES ASSOCIATED WITH THE OPENING OF IAPETUS OCEAN",
+      "schema:citation": "BEDARD, J. H.; STEVENSON, R. K., 1999, CAN. J. EARTH SCI."
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "THE EFFECTS OF MAGMATIC PROCESSES AND CRUSTAL RECYCLING ON THE MOLYBDENUM STABLE ISOTOPIC COMPOSITION OF MID-OCEAN RIDGE BASALTS",
+      "schema:citation": "BEZARD, R; FISCHER-GOEDDE, M; HAMELIN, C; BRENNECKA, G; KLEINE, T, 2016, EARTH PLANET SCI LETT"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "THE FE3+/(SUM)FE RATIOS OF MORB GLASSES AND THEIR IMPLICATIONS FOR MANTLE MELTING",
+      "schema:citation": "BEZOS, A; HUMLER, E, 2005, GEOCHIM COSMOCHIM ACTA"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "GEOCHEMISTRY OF MORB AND OIB IN THE YUEJINSHAN COMPLEX, NE CHINA: IMPLICATIONS FOR PETROGENESIS AND TECTONIC SETTING",
+      "schema:citation": "BI, J-H; GE, W-C; YANG, H; WANG, Z-H; TIAN, D-X; LIU, X-W; XU, W-L; XING, D-H, 2017, J ASIAN EARTH SCI"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "GEOCHEMISTRY OF MORB AND OIB IN THE YUEJINSHAN COMPLEX, NE CHINA: IMPLICATIONS FOR PETROGENESIS AND TECTONIC SETTING",
+      "schema:citation": "BI, JUN-HUI; GE, WENCHUN; YANG, HAO; WANG, ZHI-HUI; TIAN, DE-XIN; LIU, XI-WEN; XU, WEN-LIANG; XING, DE-HE, 2017, J. ASIAN EARTH SCI."
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "MELT ADDITION TO MID-OCEAN RIDGE PERIDOTITES INCREASES SPINEL CR# WITH NO SIGNIFICANT EFFECT ON RECORDED OXYGEN FUGACITY",
+      "schema:citation": "BIRNER, S; COTTRELL, E; WARREN, J M; KELLEY, K A; DAVIS, F, 2021, EARTH AND PLANETARY SCIENCE LETTERS"
+    },
+    {
+      "@type": "schema:Article",
+      "schema:name": "GEOCHEMICAL SEGMENTATION OF THE MIND-ATLANTIC RIDGE NORTH OF ICELAND AND RIDGE-HOT SPOT INTERACTION IN THE NORTH ATLANTIC",
+      "schema:citation": "BLICHERT-TOFT, J; AGRANIER, A; ANDRES, M; KINGSLEY, R H; SCHILLING, J-G; ALBAREDE, F, 2005, GEOCHEM GEOPHYS GEOSYST"
+    }
+  ],
+  "schema:subjectOf": {
+    "@id": "https://example.com/99152/URIforTheMetadata",
+    "@type": ["schema:Dataset"],
+    "schema:additionalType": ["dcat:CatalogRecord"],
+    "schema:about": {"@id": "https://example.com/99152/morbcitationlist"},
+    "schema:dateModified": "2017-05-23",
+    "schema:maintainer": {
+      "@type": ["schema:Organization"],
+      "schema:name": "Joe's photo studio"
+    },
+    "dcterms:conformsTo": [
+      {"@id": "https://w3id.org/cdif/complexCitation/0.1"}
+    ]
+  }
+}
