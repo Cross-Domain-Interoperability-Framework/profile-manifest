@@ -7,13 +7,21 @@ member repositories. It has been solving the aggregate-resource problem
 in production for over a decade, and it solves it **differently from
 CDIF in three respects that bear directly on the manifest profile**:
 
-1. A package is a **first-class object with its own identifier** —
-   an OAI-ORE aggregation — not a property of the dataset.
-2. Versioning uses **two identifier kinds at once**: a stable series
-   identifier plus a chain of immutable per-version identifiers.
+1. **Descriptive and structural metadata are separate objects,
+   versioned independently** — an OAI-ORE resource map beside the
+   science metadata, each with its own identifier and version chain.
+2. Versioning uses **two identifier kinds at once**, denoting different
+   things: one names the intellectual intention, the other names what
+   was actually used.
 3. Some aggregates are defined by a **stored query** rather than an
    enumerated membership list — a pattern absent from
    [`KindsOfAggregateResources.md`](KindsOfAggregateResources.md).
+
+Note that §1 is narrower than "ORE aggregations differ from
+`schema:Dataset` + `hasPart`". Mostly they do not: CDIF identifies its
+aggregate, and `schema:subjectOf` already makes ORE's
+description/described split. The independent versioning is the part that
+is genuinely different.
 
 This document records what was observed by querying the live API in
 August 2026, and what it implies for the gaps in
@@ -74,31 +82,78 @@ cito:isDocumentedBy  the inverse
 members, for the dataset *Indian Ocean Radiocarbon: Data from the INDIGO
 1, 2, and 3 Cruises*.
 
-### Why the indirection matters
+### How this differs from `schema:Dataset` + `hasPart` — and how much
 
-**The package is citable and versionable in its own right.** The
-aggregation has a PID, so you can obsolete a package without touching its
-members, and you can say "this analysis used package X" rather than
-enumerating twelve files. In CDIF the aggregate is the Dataset and
-`hasPart` is a property of it — there is no separate thing to identify.
+Less than it first appears. Two of the three apparent differences
+dissolve on inspection; one is real.
 
-**`cito:documents` is an explicit metadata-describes-data edge, and CDIF
-has no equivalent.** In the aggregation above, one EML file `documents`
-all twelve data objects. The CDIF §3.1 example
+**Not a difference: identifying the aggregate.** A CDIF
+`schema:Dataset` has an `@id` and a `schema:identifier`, so the
+aggregate is just as citable as an ORE aggregation. "This analysis used
+package X" is expressible either way.
+
+**Not a difference: separating the description from the thing
+described.** ORE splits the `ore:ResourceMap` (a retrievable document)
+from the `ore:Aggregation` (the set it describes), linked by
+`ore:describes`. CDIF makes the same split with `schema:subjectOf` — the
+catalog record is the document, the Dataset is the thing. Same move,
+different vocabulary.
+
+**The real difference: descriptive and structural metadata are separate
+objects, versioned independently.** In DataONE the science metadata
+(title, abstract, creators — an EML file) and the package structure
+(what is in it — the ResourceMap) are two objects with two PIDs and two
+version chains. Verified on the example package:
+
+| object | PID | obsoletes | seriesId |
+|---|---|---|---|
+| EML science metadata | `…5c2190a36a8151c…` | `…a821c884b3b9e26…` | `doi:10.3334/CDIAC/OTG.NDP036` |
+| ORE resource map | `…d181621a8fd7496…` | `…5698012fef393f1…` | *(none)* |
+
+Different chains, and the DOI is on the descriptive object only. So a
+repository can revise an abstract without reissuing the membership list,
+or change what is in the package without touching the description, and
+each revision is independently addressable.
+
+In CDIF both live in one JSON-LD document, so any change to either
+produces a new version of the whole record. Whether that matters depends
+on whether membership churns independently of description — which for a
+growing collection (§3.4) it certainly does.
+
+**A third, weaker difference: graph versus tree.** `ore:aggregates` and
+`ore:isAggregatedBy` are declared inverses, so a resource can sit in
+several aggregations natively. Nested `hasPart` tends toward a tree, and
+the same part in two datasets means either duplication or `@id`
+references. CDIF can express the reference form, so this is a
+serialization habit rather than a limit of the model.
+
+### `cito:documents` and `schema:about` are the same relationship
+
+They are, and the pairs are symmetric:
+
+| | forward | inverse |
+|---|---|---|
+| CiTO | `cito:documents` — "The citing entity documents information about the cited entity" | `cito:isDocumentedBy` |
+| schema.org | `schema:about` — "The subject matter of an object" | `schema:subjectOf` (declared `inverseOf`) |
+
+`cito:documents` is the narrower term — documentation specifically,
+rather than aboutness in general — but that is a specialization, not a
+conflict. For the metadata-describes-data case they say the same thing,
+in the same direction, with the same inverse available.
+
+So **this is not a vocabulary gap; it is a scoping question.** CDIF
+already has the right property, and already uses the `subjectOf` side of
+it for the catalog-record relationship. What it does not have is
+permission to use `schema:about` between *independently accessible*
+parts. The manifest profile declares it only on archive parts, so the
+§3.1 example
 ([`demoExamples/01-heterogeneous-parts.json`](demoExamples/01-heterogeneous-parts.json))
-types a codebook as `schema:CreativeWork` and leaves its relationship to
-the data implicit — a consumer can see the codebook is *in* the package
-but not that it *describes* a particular part of it.
-
-The manifest profile's `schema:about` on archive parts is the closest
-thing, and it is the right shape, but it only applies **inside** an
-archive distribution. There is no way to say "this codebook describes
-that dataset" when both are independently accessible parts.
+can say a codebook is *in* the package but not that it *describes* a
+particular part of it.
 
 > **Candidate change.** Allow `schema:about` on `schema:hasPart` members
-> generally, not only on archive parts. It is already in the profile
-> vocabulary, already means the right thing, and would close a real gap
-> in §3.1 and §3.2.
+> generally, not only on archive parts. No new term, no new semantics —
+> just removing a scope restriction that has no motivation behind it.
 
 ## 2. Versioning: two identifier kinds, deliberately
 
@@ -131,9 +186,40 @@ which is the whole point.
 This is a third model, distinct from both that §3.9 names. It is not
 DCAT's `dcat:DatasetSeries`/`inSeries` (which groups peer datasets), and
 not DataCite's `IsNewVersionOf` between peer DOIs (which has no single
-citable series identifier). It separates **the identifier you cite** from
-**the identifier you reproduce from** — a distinction neither of the
-other two makes, and one worth considering for CDIF gap 2.
+citable series identifier).
+
+### The two identifiers denote different kinds of thing
+
+They are not two names for one resource at different granularities. They
+answer different questions, and a record needs both because a reader has
+both:
+
+- **The series identifier names the intellectual intention** — what the
+  dataset is *for*: its subject, content type, data model, format. It is
+  what you cite when you mean "the Indian Ocean radiocarbon dataset",
+  and it should keep resolving as the data is corrected and reissued,
+  because the intention has not changed.
+- **The version identifier names what was actually used** — the exact
+  bytes that went into an analysis and therefore bear on its
+  conclusions. It has to be immutable, because if it can change then a
+  result cited against it is not reproducible.
+
+Conflating them costs one of the two: cite only the series and the
+analysis is not reproducible, because the content moved underneath it;
+cite only the version and the reference rots, pointing at a superseded
+snapshot when the reader wants the dataset.
+
+Both DCAT and DataCite give one identifier per version and let citation
+practice sort out the rest. DataONE makes the distinction structural, and
+puts the DOI — the thing humans cite — on the intention rather than the
+snapshot.
+
+**For CDIF gap 2** this suggests the question is not which of DCAT or
+DataCite to follow, but whether a record should carry both identifiers
+with their roles distinguished. CDIF has `schema:identifier` and
+`schema:version` but nothing that says *this identifier is stable across
+revisions and that one is not*, so a consumer cannot tell which they have
+been handed.
 
 ## 3. Query-defined collections
 
@@ -197,13 +283,15 @@ never given an identifier.
 
 | concept | CDIF | DataONE |
 |---|---|---|
-| aggregate membership | `schema:hasPart` on the Dataset or distribution | `ore:aggregates` on a separately identified `ore:Aggregation` |
-| the package itself | not separately identified | a Resource Map object with its own PID |
-| metadata describes data | `schema:about` (archive parts only) | `cito:documents` / `cito:isDocumentedBy` |
+| aggregate membership | `schema:hasPart` | `ore:aggregates` / `ore:isAggregatedBy` |
+| the aggregate itself | the `schema:Dataset`, identified | an `ore:Aggregation`, identified |
+| description vs. the thing described | `schema:subjectOf` → catalog record | `ore:describes` → resource map |
+| descriptive and structural metadata | one document, versioned together | two objects, versioned independently |
+| metadata describes data | `schema:about` / `schema:subjectOf` — **archive parts only** | `cito:documents` / `cito:isDocumentedBy` — anywhere |
 | part → whole | *(none)* | *(none — `isPartOf` unused)* |
 | version chain | `prov:wasDerivedFrom` | `obsoletes` / `obsoletedBy` |
-| citable identity across versions | *(none)* | `seriesId`, resolving to the head |
-| per-version identity | `schema:identifier` per record | immutable PID per object |
+| identifier for the intellectual intention | *(not distinguished)* | `seriesId`, resolving to the head |
+| identifier for what was actually used | *(not distinguished)* | immutable PID per object |
 | integrity | `spdx:checksum` | `checksum` + `checksumAlgorithm` in system metadata |
 | query-defined membership | *(none)* | `collectionQuery` |
 | update cadence | *(none — gap 1)* | *(none)* |
