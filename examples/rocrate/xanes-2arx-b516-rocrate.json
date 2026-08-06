@@ -179,7 +179,7 @@
       "@id": "#55a2bc2d9b97bb669ce582df7ed3c323",
       "@type": [
         "ada:collection",
-        "https://schema.org/Collection",
+        "Collection",
         "File"
       ],
       "description": "default description",

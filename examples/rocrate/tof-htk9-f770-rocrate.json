@@ -300,7 +300,7 @@
       "@id": "#f3d05b898982b3f44d88fb0dd37dd066",
       "@type": [
         "ada:collection",
-        "https://schema.org/Collection",
+        "Collection",
         "File"
       ],
       "description": "default description",

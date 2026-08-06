@@ -156,7 +156,7 @@
         {
           "@type": [
             "ada:collection",
-            "https://schema.org/Collection",
+            "schema:Collection",
             "schema:MediaObject"
           ],
           "@id": "#ba5a8e25dd936de490f641462314f3c1",

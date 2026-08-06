@@ -75,7 +75,7 @@
             "@id": "http://example.org/base/#f3d05b898982b3f44d88fb0dd37dd066",
             "@type": [
               "ada:collection",
-              "https://schema.org/Collection",
+              "schema:Collection",
               "schema:MediaObject"
             ],
             "schema:description": "default description",
@@ -126,7 +126,7 @@
           "@id": "http://example.org/base/#f3d05b898982b3f44d88fb0dd37dd066",
           "@type": [
             "ada:collection",
-            "https://schema.org/Collection",
+            "schema:Collection",
             "schema:MediaObject"
           ],
           "schema:description": "default description",
@@ -840,7 +840,7 @@
       "@id": "http://example.org/base/#f3d05b898982b3f44d88fb0dd37dd066",
       "@type": [
         "ada:collection",
-        "https://schema.org/Collection",
+        "schema:Collection",
         "schema:MediaObject"
       ],
       "schema:description": "default description",
@@ -875,7 +875,7 @@
         "@id": "http://example.org/base/#f3d05b898982b3f44d88fb0dd37dd066",
         "@type": [
           "ada:collection",
-          "https://schema.org/Collection",
+          "schema:Collection",
           "schema:MediaObject"
         ],
         "schema:description": "default description",
@@ -943,7 +943,7 @@
             "@id": "http://example.org/base/#f3d05b898982b3f44d88fb0dd37dd066",
             "@type": [
               "ada:collection",
-              "https://schema.org/Collection",
+              "schema:Collection",
               "schema:MediaObject"
             ],
             "schema:description": "default description",
@@ -994,7 +994,7 @@
           "@id": "http://example.org/base/#f3d05b898982b3f44d88fb0dd37dd066",
           "@type": [
             "ada:collection",
-            "https://schema.org/Collection",
+            "schema:Collection",
             "schema:MediaObject"
           ],
           "schema:description": "default description",
