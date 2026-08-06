@@ -1,0 +1,90 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "ex": "https://example.org/",
+    "dcat": "http://www.w3.org/ns/dcat#"
+  },
+  "@id": "ex:dataset/climate-normals",
+  "@type": [
+    "schema:Dataset"
+  ],
+  "schema:name": "Climate normals at four aggregations",
+  "schema:description": "Pattern 5: the same content at different granularities. NOT the same as pattern 4 — information content genuinely differs between levels, because coarser aggregation loses detail. So these are hasPart Datasets, each with its own temporal resolution and its own variables, rather than interchangeable distributions of one thing. A consumer choosing between them is choosing what to measure, not what to download.",
+  "schema:subjectOf": {
+    "@type": [
+      "schema:DataCatalog"
+    ],
+    "dcterms:conformsTo": [
+      {
+        "@id": "https://w3id.org/cdif/core/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/discovery/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/data_description/1.1"
+      }
+    ]
+  },
+  "schema:hasPart": [
+    {
+      "@id": "ex:dataset/climate-normals/daily",
+      "@type": [
+        "schema:Dataset"
+      ],
+      "schema:name": "Daily normals",
+      "dcterms:temporal": "P1D",
+      "schema:distribution": [
+        {
+          "@type": [
+            "schema:DataDownload"
+          ],
+          "schema:contentUrl": "https://example.org/normals/daily.zarr",
+          "schema:encodingFormat": [
+            "application/vnd.zarr"
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "ex:dataset/climate-normals/monthly",
+      "@type": [
+        "schema:Dataset"
+      ],
+      "schema:name": "Monthly normals",
+      "dcterms:temporal": "P1M",
+      "schema:description": "Derived from the daily series; daily extremes are not recoverable from this level.",
+      "schema:distribution": [
+        {
+          "@type": [
+            "schema:DataDownload"
+          ],
+          "schema:contentUrl": "https://example.org/normals/monthly.nc",
+          "schema:encodingFormat": [
+            "application/x-netcdf"
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "ex:dataset/climate-normals/annual",
+      "@type": [
+        "schema:Dataset"
+      ],
+      "schema:name": "Annual normals",
+      "dcterms:temporal": "P1Y",
+      "schema:distribution": [
+        {
+          "@type": [
+            "schema:DataDownload"
+          ],
+          "schema:contentUrl": "https://example.org/normals/annual.csv",
+          "schema:encodingFormat": [
+            "text/csv"
+          ]
+        }
+      ]
+    }
+  ]
+}

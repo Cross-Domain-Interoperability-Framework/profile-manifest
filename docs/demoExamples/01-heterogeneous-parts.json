@@ -1,0 +1,140 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "ex": "https://example.org/"
+  },
+  "@id": "ex:dataset/soil-survey-2024",
+  "@type": [
+    "schema:Dataset"
+  ],
+  "schema:name": "Regional soil survey 2024 — complete package",
+  "schema:description": "Pattern 1: a Dataset whose parts are separate Resources, each independently accessible with its own distribution, and each a different kind of thing — measurements, a codebook, a methods document, a quality report, a browse image. No single distribution gives you the whole dataset; together they are the complete intellectual package. Parts are typed to say what they are: schema:Dataset for the data, schema:CreativeWork for the documents, schema:MediaObject for the browse image.",
+  "schema:subjectOf": {
+    "@type": [
+      "schema:DataCatalog"
+    ],
+    "dcterms:conformsTo": [
+      {
+        "@id": "https://w3id.org/cdif/core/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/discovery/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/data_description/1.1"
+      }
+    ]
+  },
+  "schema:keywords": [
+    "soil",
+    "survey",
+    "geochemistry"
+  ],
+  "schema:license": {
+    "@id": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "schema:hasPart": [
+    {
+      "@id": "ex:dataset/soil-survey-2024/measurements",
+      "@type": [
+        "schema:Dataset"
+      ],
+      "schema:name": "Horizon measurements",
+      "schema:description": "The core data: one row per soil horizon.",
+      "schema:distribution": [
+        {
+          "@type": [
+            "schema:DataDownload"
+          ],
+          "schema:contentUrl": "https://example.org/soil/2024/horizons.csv",
+          "schema:encodingFormat": [
+            "text/csv"
+          ],
+          "schema:name": "horizons.csv"
+        }
+      ],
+      "schema:variableMeasured": [
+        {
+          "@type": [
+            "schema:PropertyValue"
+          ],
+          "schema:name": "organic_carbon",
+          "schema:unitText": "g/kg",
+          "schema:propertyID": [
+            {
+              "@id": "ex:vocab/organicCarbon"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "ex:dataset/soil-survey-2024/codebook",
+      "@type": [
+        "schema:CreativeWork"
+      ],
+      "schema:name": "Codebook",
+      "schema:description": "Variable definitions and permitted values. Not data in the same sense, but part of the package.",
+      "schema:distribution": [
+        {
+          "@type": [
+            "schema:DataDownload"
+          ],
+          "schema:contentUrl": "https://example.org/soil/2024/codebook.pdf",
+          "schema:encodingFormat": [
+            "application/pdf"
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "ex:dataset/soil-survey-2024/methods",
+      "@type": [
+        "schema:CreativeWork"
+      ],
+      "schema:name": "Sampling and analytical methods",
+      "schema:distribution": [
+        {
+          "@type": [
+            "schema:DataDownload"
+          ],
+          "schema:contentUrl": "https://example.org/soil/2024/methods.pdf",
+          "schema:encodingFormat": [
+            "application/pdf"
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "ex:dataset/soil-survey-2024/quality",
+      "@type": [
+        "schema:CreativeWork"
+      ],
+      "schema:name": "Quality assessment report",
+      "schema:distribution": [
+        {
+          "@type": [
+            "schema:DataDownload"
+          ],
+          "schema:contentUrl": "https://example.org/soil/2024/qa.html",
+          "schema:encodingFormat": [
+            "text/html"
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "ex:dataset/soil-survey-2024/browse",
+      "@type": [
+        "schema:MediaObject"
+      ],
+      "schema:name": "Browse image",
+      "schema:description": "Sample-location map, for display in a catalog.",
+      "schema:contentUrl": "https://example.org/soil/2024/browse.png",
+      "schema:encodingFormat": [
+        "image/png"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "ex": "https://example.org/",
+    "dcat": "http://www.w3.org/ns/dcat#"
+  },
+  "@id": "ex:dataset/station-daily",
+  "@type": [
+    "schema:Dataset",
+    "dcat:DatasetSeries"
+  ],
+  "schema:name": "Monitoring station — daily files (accumulating)",
+  "schema:description": "Pattern 2, open-ended case: identity is stable, contents are not. At any moment there is a definable set of parts, but the set is not closed and parts arrive asynchronously. NOTE: the two properties this pattern most needs — dcat:DatasetSeries typing and dcterms:accrualPeriodicity — are NOT defined by any CDIF building block. They are used here from DCAT/DCTERMS because CDIF validation is open-world, and are flagged in README.md as a gap.",
+  "schema:subjectOf": {
+    "@type": [
+      "schema:DataCatalog"
+    ],
+    "dcterms:conformsTo": [
+      {
+        "@id": "https://w3id.org/cdif/core/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/discovery/1.1"
+      }
+    ]
+  },
+  "schema:temporalCoverage": "2019-01-01/..",
+  "dcterms:accrualPeriodicity": {
+    "@id": "http://purl.org/cld/freq/daily"
+  },
+  "schema:dateModified": "2026-08-03",
+  "schema:distribution": [
+    {
+      "@type": [
+        "schema:DataDownload"
+      ],
+      "schema:name": "Daily files",
+      "schema:encodingFormat": [
+        "text/csv"
+      ],
+      "schema:contentUrl": "https://example.org/station/daily/",
+      "schema:description": "One file per UTC day, named YYYY-MM-DD.csv, published about 02:00 the following day.",
+      "schema:potentialAction": [
+        {
+          "@type": [
+            "schema:Action"
+          ],
+          "schema:name": "Fetch one day",
+          "schema:target": {
+            "@type": [
+              "schema:EntryPoint"
+            ],
+            "schema:urlTemplate": "https://example.org/station/daily/{date}.csv",
+            "schema:httpMethod": [
+              "GET"
+            ],
+            "schema:contentType": [
+              "text/csv"
+            ]
+          },
+          "schema:query-input": [
+            {
+              "@type": [
+                "schema:PropertyValueSpecification"
+              ],
+              "schema:valueName": "date",
+              "schema:description": "UTC day, YYYY-MM-DD.",
+              "schema:valueRequired": true,
+              "schema:valuePattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "schema:variableMeasured": [
+    {
+      "@type": [
+        "schema:PropertyValue"
+      ],
+      "schema:name": "discharge",
+      "schema:unitText": "m3/s",
+      "schema:propertyID": [
+        {
+          "@id": "ex:vocab/discharge"
+        }
+      ]
+    }
+  ]
+}

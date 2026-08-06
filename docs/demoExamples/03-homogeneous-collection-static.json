@@ -1,0 +1,86 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "ex": "https://example.org/",
+    "cdi": "http://ddialliance.org/Specification/DDI-CDI/1.0/RDF/",
+    "cdif": "https://cdif.org/0.1/"
+  },
+  "@id": "ex:dataset/ct-scan-slices",
+  "@type": [
+    "schema:Dataset"
+  ],
+  "schema:name": "X-ray CT reconstruction — slice stack",
+  "schema:description": "Pattern 2, static case: many files of ONE content type, format and data structure. The structure is described once and applies to every file; the files are reached through a URL template rather than enumerated. The set is closed — 1024 slices, stated as a count. Contrast 04, where the set stays open.",
+  "schema:subjectOf": {
+    "@type": [
+      "schema:DataCatalog"
+    ],
+    "dcterms:conformsTo": [
+      {
+        "@id": "https://w3id.org/cdif/core/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/discovery/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/data_description/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/data_structure/1.1"
+      }
+    ]
+  },
+  "schema:distribution": [
+    {
+      "@type": [
+        "schema:DataDownload",
+        "cdi:PhysicalDataSet"
+      ],
+      "schema:name": "Slice files",
+      "schema:encodingFormat": [
+        "image/tiff"
+      ],
+      "schema:contentUrl": "https://example.org/ct/slices/",
+      "schema:description": "1024 files named slice_0000.tif … slice_1023.tif. One structure describes them all.",
+      "cdi:isStructuredBy": {
+        "@id": "ex:structure/ct-slice",
+        "@type": [
+          "cdi:DimensionalDataStructure"
+        ],
+        "schema:description": "2048 x 2048 uint16 attenuation grid, identical in every file."
+      },
+      "schema:potentialAction": [
+        {
+          "@type": [
+            "schema:Action"
+          ],
+          "schema:name": "Fetch one slice",
+          "schema:target": {
+            "@type": [
+              "schema:EntryPoint"
+            ],
+            "schema:urlTemplate": "https://example.org/ct/slices/slice_{index}.tif",
+            "schema:httpMethod": [
+              "GET"
+            ],
+            "schema:contentType": [
+              "image/tiff"
+            ]
+          },
+          "schema:query-input": [
+            {
+              "@type": [
+                "schema:PropertyValueSpecification"
+              ],
+              "schema:valueName": "index",
+              "schema:description": "Zero-padded slice number, 0000 to 1023.",
+              "schema:valueRequired": true,
+              "schema:valuePattern": "^[0-9]{4}$"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

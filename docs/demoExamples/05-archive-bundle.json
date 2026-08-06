@@ -1,0 +1,109 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "ex": "https://example.org/",
+    "spdx": "http://spdx.org/rdf/terms#",
+    "cdi": "http://ddialliance.org/Specification/DDI-CDI/1.0/RDF/",
+    "cdif": "https://cdif.org/0.1/"
+  },
+  "@id": "ex:dataset/mission-bundle",
+  "@type": [
+    "schema:Dataset"
+  ],
+  "schema:name": "Instrument bundle — single archive",
+  "schema:description": "Pattern 3: one dataset, one distribution, parts NOT independently accessible on the web. Each part is described in full and located by its path inside the archive. This is the CDIF manifest profile's own case: parts are schema:MediaObject and must not be typed schema:DataDownload, because there is no URL to download them from. Parts here are heterogeneous — two data files with different structure, plus a sidecar that points at the file it describes via schema:about.",
+  "schema:subjectOf": {
+    "@type": [
+      "schema:DataCatalog"
+    ],
+    "dcterms:conformsTo": [
+      {
+        "@id": "https://w3id.org/cdif/core/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/discovery/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/manifest/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/data_description/1.1"
+      }
+    ]
+  },
+  "schema:distribution": [
+    {
+      "@type": [
+        "schema:DataDownload",
+        "cdi:PhysicalDataSet"
+      ],
+      "schema:name": "Bundle",
+      "schema:contentUrl": "https://example.org/bundles/mission-01.zip",
+      "schema:encodingFormat": [
+        "application/zip"
+      ],
+      "spdx:checksum": {
+        "@type": [
+          "spdx:Checksum"
+        ],
+        "spdx:algorithm": "SHA-256",
+        "spdx:checksumValue": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "schema:hasPart": [
+        {
+          "@id": "#spectra",
+          "@type": [
+            "schema:MediaObject"
+          ],
+          "schema:name": "data/spectra.csv",
+          "schema:description": "Path inside the archive is the locator; there is no contentUrl because the file is not separately retrievable.",
+          "schema:encodingFormat": [
+            "text/csv"
+          ],
+          "schema:size": {
+            "@type": [
+              "schema:QuantitativeValue"
+            ],
+            "schema:value": 481203,
+            "schema:unitText": "byte"
+          },
+          "spdx:checksum": {
+            "@type": [
+              "spdx:Checksum"
+            ],
+            "spdx:algorithm": "SHA-256",
+            "spdx:checksumValue": "1111111111111111111111111111111111111111111111111111111111111111"
+          }
+        },
+        {
+          "@id": "#images",
+          "@type": [
+            "schema:MediaObject"
+          ],
+          "schema:name": "data/context.tif",
+          "schema:description": "Different content type and structure from spectra.csv — an archive's parts need not be homogeneous.",
+          "schema:encodingFormat": [
+            "image/tiff"
+          ]
+        },
+        {
+          "@id": "#spectra-meta",
+          "@type": [
+            "schema:MediaObject"
+          ],
+          "schema:name": "meta/spectra.json",
+          "schema:description": "Metadata sidecar. schema:about names the part it describes.",
+          "schema:encodingFormat": [
+            "application/json"
+          ],
+          "schema:about": [
+            {
+              "@id": "#spectra"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "ex": "https://example.org/",
+    "dcat": "http://www.w3.org/ns/dcat#"
+  },
+  "@id": "ex:dataset/climate-ensemble",
+  "@type": [
+    "schema:Dataset"
+  ],
+  "schema:name": "Multi-node climate model ensemble",
+  "schema:description": "Pattern 1, federated variant: the parts are hosted by different organizations, at different URLs, behind different access protocols, and are independently managed. The aggregate record describes the whole; each part carries its OWN provider, conditionsOfAccess and dateModified, because those are what differ and what a consumer needs before planning access. Availability and update schedule are per part, not per aggregate.",
+  "schema:subjectOf": {
+    "@type": [
+      "schema:DataCatalog"
+    ],
+    "dcterms:conformsTo": [
+      {
+        "@id": "https://w3id.org/cdif/core/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/discovery/1.1"
+      }
+    ]
+  },
+  "schema:provider": {
+    "@type": [
+      "schema:Organization"
+    ],
+    "schema:name": "Ensemble coordination office"
+  },
+  "schema:hasPart": [
+    {
+      "@id": "https://node-a.example.org/cmip/tas",
+      "@type": [
+        "schema:Dataset"
+      ],
+      "schema:name": "Node A — surface air temperature",
+      "schema:provider": {
+        "@type": [
+          "schema:Organization"
+        ],
+        "schema:name": "Institute A"
+      },
+      "schema:conditionsOfAccess": "Open, registration required",
+      "schema:dateModified": "2026-05-14",
+      "schema:distribution": [
+        {
+          "@type": [
+            "schema:WebAPI"
+          ],
+          "schema:name": "OPeNDAP endpoint",
+          "schema:serviceType": "OPeNDAP",
+          "schema:url": "https://node-a.example.org/thredds/dodsC/tas"
+        }
+      ]
+    },
+    {
+      "@id": "https://node-b.example.org/cmip/pr",
+      "@type": [
+        "schema:Dataset"
+      ],
+      "schema:name": "Node B — precipitation",
+      "schema:provider": {
+        "@type": [
+          "schema:Organization"
+        ],
+        "schema:name": "Institute B"
+      },
+      "schema:conditionsOfAccess": "Open",
+      "schema:dateModified": "2026-07-02",
+      "schema:distribution": [
+        {
+          "@type": [
+            "schema:DataDownload"
+          ],
+          "schema:contentUrl": "https://node-b.example.org/data/pr.nc",
+          "schema:encodingFormat": [
+            "application/x-netcdf"
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "https://node-c.example.org/sparql",
+      "@type": [
+        "schema:Dataset"
+      ],
+      "schema:name": "Node C — station metadata (SPARQL)",
+      "schema:provider": {
+        "@type": [
+          "schema:Organization"
+        ],
+        "schema:name": "Institute C"
+      },
+      "schema:conditionsOfAccess": "Rate limited",
+      "schema:distribution": [
+        {
+          "@type": [
+            "schema:WebAPI"
+          ],
+          "schema:name": "SPARQL endpoint",
+          "schema:serviceType": "SPARQL",
+          "schema:url": "https://node-c.example.org/sparql"
+        }
+      ]
+    }
+  ]
+}

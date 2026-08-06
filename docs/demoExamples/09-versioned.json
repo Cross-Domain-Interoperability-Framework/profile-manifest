@@ -1,0 +1,66 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "ex": "https://example.org/",
+    "prov": "http://www.w3.org/ns/prov#"
+  },
+  "@id": "ex:dataset/census-tables/2.0",
+  "@type": [
+    "schema:Dataset"
+  ],
+  "schema:name": "Census tabulations, version 2.0",
+  "schema:description": "Versioning: complete snapshots that replace or correct one another, not a set that grows (contrast 04). Modelled here as the DataCite reading — each version is its own dataset with its own identifier, linked by lineage — rather than one dataset with several states. NOTE: neither schema:isBasedOn nor dcterms:isVersionOf is defined by a CDIF building block. prov:wasDerivedFrom IS, and carries the lineage here; the DCTERMS terms are shown alongside for the DCAT/DataCite reading and are flagged in README.md.",
+  "schema:subjectOf": {
+    "@type": [
+      "schema:DataCatalog"
+    ],
+    "dcterms:conformsTo": [
+      {
+        "@id": "https://w3id.org/cdif/core/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/discovery/1.1"
+      }
+    ]
+  },
+  "schema:version": "2.0",
+  "schema:datePublished": "2026-03-01",
+  "schema:identifier": [
+    {
+      "@id": "https://doi.org/10.5555/census.2.0"
+    }
+  ],
+  "prov:wasDerivedFrom": [
+    {
+      "@id": "ex:dataset/census-tables/1.1",
+      "@type": [
+        "schema:Dataset"
+      ],
+      "schema:name": "Census tabulations, version 1.1",
+      "schema:version": "1.1",
+      "schema:identifier": [
+        {
+          "@id": "https://doi.org/10.5555/census.1.1"
+        }
+      ]
+    }
+  ],
+  "dcterms:isVersionOf": {
+    "@id": "ex:dataset/census-tables"
+  },
+  "dcterms:replaces": {
+    "@id": "ex:dataset/census-tables/1.1"
+  },
+  "schema:distribution": [
+    {
+      "@type": [
+        "schema:DataDownload"
+      ],
+      "schema:contentUrl": "https://example.org/census/v2.0/tables.csv",
+      "schema:encodingFormat": [
+        "text/csv"
+      ]
+    }
+  ]
+}

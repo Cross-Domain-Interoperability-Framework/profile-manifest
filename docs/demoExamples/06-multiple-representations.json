@@ -1,0 +1,91 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "ex": "https://example.org/",
+    "spdx": "http://spdx.org/rdf/terms#"
+  },
+  "@id": "ex:dataset/geologic-map",
+  "@type": [
+    "schema:Dataset"
+  ],
+  "schema:name": "Bedrock geology 1:50 000",
+  "schema:description": "Pattern 4: several distributions of the SAME content. Each is a complete, interchangeable copy — a consumer picks one by format or projection, never assembles them. Nothing is a hasPart here, and the variables are stated once on the dataset because every distribution carries the same ones.",
+  "schema:subjectOf": {
+    "@type": [
+      "schema:DataCatalog"
+    ],
+    "dcterms:conformsTo": [
+      {
+        "@id": "https://w3id.org/cdif/core/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/discovery/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/data_description/1.1"
+      }
+    ]
+  },
+  "schema:distribution": [
+    {
+      "@type": [
+        "schema:DataDownload"
+      ],
+      "schema:contentUrl": "https://example.org/geol/bedrock_epsg4326.gpkg",
+      "schema:encodingFormat": [
+        "application/geopackage+sqlite3"
+      ],
+      "schema:name": "GeoPackage, EPSG:4326",
+      "dcterms:conformsTo": [
+        {
+          "@id": "http://www.opengis.net/def/crs/EPSG/0/4326"
+        }
+      ]
+    },
+    {
+      "@type": [
+        "schema:DataDownload"
+      ],
+      "schema:contentUrl": "https://example.org/geol/bedrock_epsg3857.zip",
+      "schema:encodingFormat": [
+        "application/x-shapefile"
+      ],
+      "schema:name": "Shapefile, EPSG:3857",
+      "dcterms:conformsTo": [
+        {
+          "@id": "http://www.opengis.net/def/crs/EPSG/0/3857"
+        }
+      ]
+    },
+    {
+      "@type": [
+        "schema:DataDownload"
+      ],
+      "schema:contentUrl": "https://example.org/geol/bedrock.geojson",
+      "schema:encodingFormat": [
+        "application/geo+json"
+      ],
+      "schema:name": "GeoJSON, EPSG:4326",
+      "dcterms:conformsTo": [
+        {
+          "@id": "http://www.opengis.net/def/crs/EPSG/0/4326"
+        }
+      ]
+    }
+  ],
+  "schema:variableMeasured": [
+    {
+      "@type": [
+        "schema:PropertyValue"
+      ],
+      "schema:name": "unit_code",
+      "schema:description": "Stated once: identical in every distribution.",
+      "schema:propertyID": [
+        {
+          "@id": "ex:vocab/mapUnit"
+        }
+      ]
+    }
+  ]
+}

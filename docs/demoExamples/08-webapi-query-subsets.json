@@ -1,0 +1,100 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "ex": "https://example.org/"
+  },
+  "@id": "ex:dataset/ocean-cube",
+  "@type": [
+    "schema:Dataset"
+  ],
+  "schema:name": "Ocean reanalysis data cube",
+  "schema:description": "The subset-access case: one logical resource with no pre-existing decomposition into parts. Subsets are generated on demand and the partitioning is chosen by the consumer's query, not by the producer. So there is no hasPart at all — the distribution is a WebAPI whose potentialAction declares what can be varied. schema:result describes the shape of what comes back.",
+  "schema:subjectOf": {
+    "@type": [
+      "schema:DataCatalog"
+    ],
+    "dcterms:conformsTo": [
+      {
+        "@id": "https://w3id.org/cdif/core/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/discovery/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/data_description/1.1"
+      }
+    ]
+  },
+  "schema:distribution": [
+    {
+      "@type": [
+        "schema:WebAPI"
+      ],
+      "schema:name": "Subsetting service",
+      "schema:serviceType": "OGC:WCS",
+      "schema:url": "https://example.org/wcs",
+      "schema:potentialAction": [
+        {
+          "@type": [
+            "schema:Action"
+          ],
+          "schema:name": "Request a subset",
+          "schema:target": {
+            "@type": [
+              "schema:EntryPoint"
+            ],
+            "schema:urlTemplate": "https://example.org/wcs?coverage=temp&bbox={bbox}&time={time}&format={format}",
+            "schema:httpMethod": [
+              "GET"
+            ],
+            "schema:contentType": [
+              "application/x-netcdf",
+              "image/tiff"
+            ]
+          },
+          "schema:result": {
+            "@type": [
+              "schema:DataDownload"
+            ],
+            "schema:encodingFormat": [
+              "application/x-netcdf"
+            ],
+            "schema:description": "A subset is ephemeral. Citing one for reproducibility means recording the query that produced it — see README.md.",
+            "dcterms:conformsTo": [
+              {
+                "@id": "http://www.opengis.net/def/nil/OGC/0/missing"
+              }
+            ]
+          },
+          "schema:query-input": [
+            {
+              "@type": [
+                "schema:PropertyValueSpecification"
+              ],
+              "schema:valueName": "bbox",
+              "schema:description": "minx,miny,maxx,maxy in EPSG:4326.",
+              "schema:valueRequired": true
+            },
+            {
+              "@type": [
+                "schema:PropertyValueSpecification"
+              ],
+              "schema:valueName": "time",
+              "schema:description": "Instant or ISO 8601 interval.",
+              "schema:valueRequired": true
+            },
+            {
+              "@type": [
+                "schema:PropertyValueSpecification"
+              ],
+              "schema:valueName": "format",
+              "schema:valueRequired": false,
+              "schema:valuePattern": "^(netcdf|geotiff)$"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

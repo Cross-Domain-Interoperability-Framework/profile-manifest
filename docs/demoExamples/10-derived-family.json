@@ -1,0 +1,85 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "ex": "https://example.org/",
+    "prov": "http://www.w3.org/ns/prov#"
+  },
+  "@id": "ex:dataset/xas-normalised",
+  "@type": [
+    "schema:Dataset"
+  ],
+  "schema:name": "Normalised XAS spectra",
+  "schema:description": "A processing chain: raw spectra to background-corrected to normalised. Each step is a distinct dataset because the information content genuinely changes — unlike pattern 4, where the content is identical and only the encoding differs. The chain is carried by prov:wasGeneratedBy on a CreateAction whose schema:object is the input, so each link records not just WHAT it came from but what was done to it.",
+  "schema:subjectOf": {
+    "@type": [
+      "schema:DataCatalog"
+    ],
+    "dcterms:conformsTo": [
+      {
+        "@id": "https://w3id.org/cdif/core/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/discovery/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/provenance/1.1"
+      }
+    ]
+  },
+  "prov:wasGeneratedBy": [
+    {
+      "@id": "ex:activity/normalise",
+      "@type": [
+        "schema:CreateAction",
+        "prov:Activity"
+      ],
+      "schema:name": "Edge-step normalisation",
+      "schema:startTime": "2026-06-02T10:04:11",
+      "schema:endTime": "2026-06-02T10:04:19",
+      "schema:instrument": {
+        "@type": [
+          "schema:Thing",
+          "schema:SoftwareApplication"
+        ],
+        "schema:name": "Larch",
+        "schema:version": "0.9.71"
+      },
+      "schema:object": {
+        "@id": "ex:dataset/xas-corrected",
+        "@type": [
+          "schema:Dataset"
+        ],
+        "schema:name": "Background-corrected spectra",
+        "prov:wasGeneratedBy": [
+          {
+            "@id": "ex:activity/correct",
+            "@type": [
+              "schema:CreateAction",
+              "prov:Activity"
+            ],
+            "schema:name": "Background subtraction",
+            "schema:object": {
+              "@id": "ex:dataset/xas-raw",
+              "@type": [
+                "schema:Dataset"
+              ],
+              "schema:name": "Raw spectra"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "schema:distribution": [
+    {
+      "@type": [
+        "schema:DataDownload"
+      ],
+      "schema:contentUrl": "https://example.org/xas/normalised.csv",
+      "schema:encodingFormat": [
+        "text/csv"
+      ]
+    }
+  ]
+}
