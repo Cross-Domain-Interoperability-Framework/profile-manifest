@@ -341,6 +341,27 @@ record that confuses them still validates.
 - **§3.4 versus §3.9.** Both change over time. §3.4 accumulates under a
   stable identity; §3.9 replaces one complete snapshot with another.
 
+### `schema:hasPart` means four different things
+
+It is the same property name in all four cases, and the item shape
+differs in each. What disambiguates them is **which object the property
+sits on** — not anything in the property itself, so a consumer walking a
+graph must track where it is.
+
+| on this object | the parts are | shape |
+|---|---|---|
+| `schema:Dataset` | package members, independently accessible, each at its own address | `resourcePartArray` |
+| a `schema:distribution` item | component files inside an archive, with no address of their own | `archivePartArray` |
+| `schema:instrument` | sub-components of an instrument system | `InstrumentComponent` |
+| bioschemas `ComputationalWorkflow` | sub-workflows and component tools | inline |
+
+The first two are the ones this profile defines, and they are the pair
+most easily confused. The test is whether a part can be retrieved on its
+own: if yes it belongs on the Dataset and may be typed
+`schema:DataDownload`; if it can only be reached by unpacking something
+else, it belongs on the distribution and **must not** be typed
+`schema:DataDownload`, because there is nothing to download it from.
+
 ## 4. Conceptual model
 
 | element | | description |

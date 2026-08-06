@@ -36,10 +36,36 @@ Validation is **open-world**: properties not described by the profile are allowe
 
 ## schema:Dataset {#sec-schema-dataset}
 
-Profile module for archive distributions. Marks the catalog record as conformant to the CDIF manifest spec (https://w3id.org/cdif/manifest/1.1) and lets schema:distribution items carry schema:hasPart describing the component files inside an archive (ZIP, etc.). The base schema:distribution anyOf [DataDownload, WebAPI] contributed by cdifCore is preserved — this BB only adds property constraints, no new anyOf branch. (Merged from the previous cdifProfile/cdifArchive BB, which held only the $defs for ArchivePart; everything now lives here.)
+Profile module for packages: the resources that make up a dataset and where to retrieve each of them. Marks the catalog record as conformant to the CDIF manifest spec (https://w3id.org/cdif/manifest/1.1) and declares `schema:hasPart` in the two places a package needs it — on the `schema:Dataset`, for parts that are independently accessible at their own addresses, and on a `schema:distribution` item, for component files inside an archive (ZIP, etc.) that have no address of their own. The base schema:distribution anyOf [DataDownload, WebAPI] contributed by cdifCore is preserved — this BB only adds property constraints, no new anyOf branch. (Merged from the previous cdifProfile/cdifArchive BB, which held only the $defs for ArchivePart; everything now lives here.)
 
 ### schema:subjectOf
 - (required) conformance statement in the subjectOf/dcat:catalogRecord must include "dcterms:conformsTo" includes    "https://w3id.org/cdif/manifest/1.1"
+
+### Which `schema:hasPart` is this?
+
+`schema:hasPart` carries four different meanings in CDIF, with a different item shape in each. **What disambiguates them is the object the property sits on** — nothing in the property itself — so a consumer walking a graph has to track where it is.
+
+| on this object | the parts are | shape |
+|---|---|---|
+| `schema:Dataset` | package members, independently accessible, each at its own address | `resourcePartItem` (this profile) |
+| a `schema:distribution` item | component files inside an archive, with no address of their own | `archivePartItem` (this profile) |
+| `schema:instrument` | sub-components of an instrument system | `InstrumentComponent` (instrument BB) |
+| a bioschemas `ComputationalWorkflow` | sub-workflows and component tools | inline (bioschemas BB) |
+
+The first two are the pair most easily confused. **The test is whether a part can be retrieved on its own.** If it can, it belongs on the Dataset and may be typed `schema:DataDownload`. If it can only be reached by unpacking something else, it belongs on the distribution and **must not** be typed `schema:DataDownload`, because there is nothing to download it from.
+
+### schema:hasPart
+
+The resources that make up the package, where each is **independently retrievable at its own address**. This is the networked case the profile exists for: a package is "not so much a physical assembly as a list of needed resources and the addresses which can be used to retrieve them".
+
+- **Cardinality:** Optional
+- **Content:** array of `resourcePartItem`
+
+Type each part for what it is — `schema:Dataset` for data, `schema:CreativeWork` for a codebook, methods document or quality report, `schema:MediaObject` for a browse image. A part may carry its own `schema:distribution`, and may be typed `schema:DataDownload`; an archive part may not.
+
+Where parts are under separate stewardship, put `schema:provider`, `schema:conditionsOfAccess` and `schema:dateModified` **on each part**, since those are exactly what differ and what a consumer needs before planning access.
+
+Use `schema:about` on a part that describes another — a codebook, a data dictionary, a quality report, a metadata sidecar — so a consumer can tell *which* part it documents, rather than only that both are in the package. This is the same relationship OAI-ORE packages express with `cito:documents`; `schema:subjectOf` is its declared inverse.
 
 ### schema:distribution
 If the DataDownload type is application/zip (might need more general way to identify bundled packages of files), then the DataDownload must have hasPart properties that are schema:MediaObject instances describing the contained files. 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "CDIF Manifest",
-  "description": "Profile module for archive distributions. Marks the catalog record as conformant to the CDIF manifest spec (https://w3id.org/cdif/manifest/1.1) and lets schema:distribution items carry schema:hasPart describing the component files inside an archive (ZIP, etc.). The base schema:distribution anyOf [DataDownload, WebAPI] contributed by cdifCore is preserved — this BB only adds property constraints, no new anyOf branch. (Merged from the previous cdifProfile/cdifArchive BB, which held only the $defs for ArchivePart; everything now lives here.)",
+  "description": "Profile module for packages: the resources that make up a dataset and where to retrieve each of them. Marks the catalog record as conformant to the CDIF manifest spec (https://w3id.org/cdif/manifest/1.1) and declares schema:hasPart in the two places a package needs it — on the Dataset, for parts that are independently accessible at their own addresses, and on a schema:distribution item, for component files inside an archive (ZIP, etc.) that have no address of their own. Both part shapes carry schema:about, so a part that describes another — a codebook, a data dictionary, a metadata sidecar — can say which one. The base schema:distribution anyOf [DataDownload, WebAPI] contributed by cdifCore is preserved — this BB only adds property constraints, no new anyOf branch. (Merged from the previous cdifProfile/cdifArchive BB, which held only the $defs for ArchivePart; everything now lives here.)",
   "type": "object",
   "properties": {
     "schema:subjectOf": {
@@ -23,6 +23,56 @@
             "properties": {
               "@id": {
                 "const": "https://w3id.org/cdif/manifest/1.1"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schema:hasPart": {
+      "type": "array",
+      "description": "Component resources of a package whose parts are independently accessible, each with its own distribution. Parts may differ in content type, format and data structure. For component files inside an archive, which have no address of their own, use schema:hasPart on the distribution instead.",
+      "items": {
+        "type": "object",
+        "description": "One independently accessible member of a package. Type it for what it is: schema:Dataset for data, schema:CreativeWork for a codebook, methods document or quality report, schema:MediaObject for a browse image. Parts under separate stewardship should carry their own schema:provider, schema:conditionsOfAccess and schema:dateModified, since those are what differ.",
+        "properties": {
+          "@id": {
+            "type": "string",
+            "description": "Identifier for this part."
+          },
+          "@type": {
+            "type": "array",
+            "description": "What kind of resource this part is. Not constrained to schema:MediaObject as an archive part is, because a part with its own address may well be a Dataset or a DataDownload.",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "schema:name": {
+            "type": "string"
+          },
+          "schema:description": {
+            "type": "string"
+          },
+          "schema:encodingFormat": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "schema:url": {
+            "type": "string"
+          },
+          "schema:about": {
+            "type": "array",
+            "description": "The part this one is about. Use it on a part that describes another -- a codebook, a data dictionary, a quality report, a metadata sidecar -- so that a consumer can tell WHICH part it documents rather than only that both are in the package. Equivalent in this use to cito:documents, which is how OAI-ORE packages express the same relationship; schema:subjectOf is the declared inverse.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "@id": {
+                  "type": "string",
+                  "description": "Reference to the @id of the part being described."
+                }
               }
             }
           }
