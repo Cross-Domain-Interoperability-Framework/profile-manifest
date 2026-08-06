@@ -118,7 +118,8 @@
   "schema:distribution": [
     {
       "@type": [
-        "schema:DataDownload"
+        "schema:DataDownload",
+        "schema:Collection"
       ],
       "schema:contentUrl": "https://zenodo.org/records/16606355/files/2025-07-30_10-18-05_831788.zip",
       "schema:encodingFormat": [
