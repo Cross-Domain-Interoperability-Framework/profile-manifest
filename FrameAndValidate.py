@@ -3,7 +3,7 @@
 # GENERATED FILE -- DO NOT EDIT.
 # Synced from CDIF/validation/tools/FrameAndValidate.py (the normative source).
 # Edit there, then run:  python tools/sync_frameandvalidate.py --apply
-# src-sha256: 16ff65c25c7aa5fc50fbf301ec317d5c5cb5b1649bafd4eca1a4a08dbac56a06
+# src-sha256: 01ee2193bd3c58b98006e2eacfda2e6771e8256a9d90b4dfbbdf275a9d27aaac
 # <<< CDIF-SYNC GENERATED <<<
 
 """
@@ -36,12 +36,6 @@ SCRIPT_DIR = Path(__file__).parent
 # given document is a harmless no-op, so one list serves every profile.
 ARRAY_PROPERTIES = [
     # schema.org properties -- wrapped to array at any nesting level
-    # schema:about is how an archive part points at the part it
-    # describes. Framing embeds the referenced node, which collapses the
-    # single-item array to a bare object, and the schema declares it an
-    # array -- so without this entry every sidecar reference fails
-    # validation. It was breaking 4 of the 8 examples in this repo.
-    'schema:about',
     'schema:contributor',
     'schema:distribution',
     'schema:license',
@@ -184,6 +178,70 @@ def is_bare_id_reference(obj):
     return len(keys) == 1 and keys[0] == '@id'
 
 
+# --- Bare-DataStructure normalizations -------------------------------------
+# These run ONLY on documents rooted directly on a DDI-CDI data-structure type
+# (the cdi:has_DataStructureComponent grammar), never on Dataset / manifest /
+# data-description docs, where the same keys are typed differently (e.g.
+# cdi:qualifies is an array here but a single object in cdifDataDescription).
+STRUCTURE_ROOT_TYPES = frozenset({
+    'DataStructure', 'DimensionalDataStructure',
+    'LongDataStructure', 'WideDataStructure',
+})
+
+# Keys whose value is an id-reference to another node (a data-structure
+# component), never an inline copy of it. Framing with @embed:@always inlines
+# the whole target; these get collapsed back to a bare {@id} because the full
+# node is retained at its own cdi:has_DataStructureComponent slot and the schema
+# types these as references.
+REFERENCE_ONLY_KEYS = ('cdi:qualifies', 'cdi:refersTo')
+
+# Keys the (bare-structure) schema requires as arrays but framing collapses to a
+# scalar / single object when there is exactly one value.
+STRUCTURE_ARRAY_KEYS = ('cdif:name', 'cdi:qualifies', 'cdi:semantic')
+
+
+def _collapse_to_id_ref(value):
+    """Reduce an embedded node (a dict carrying @id plus other keys) to a bare
+    {@id} reference. Recurses into lists; leaves inline objects without @id (e.g.
+    an anonymous role) and plain strings untouched."""
+    if isinstance(value, list):
+        return [_collapse_to_id_ref(v) for v in value]
+    if isinstance(value, dict) and '@id' in value and len(value) > 1:
+        return {'@id': value['@id']}
+    return value
+
+
+def _is_structure_rooted(doc):
+    """True if the raw document's top-level @type names a DDI-CDI data structure."""
+    if not isinstance(doc, dict):
+        return False
+    t = doc.get('@type')
+    if isinstance(t, str):
+        t = [t]
+    if not isinstance(t, list):
+        return False
+    return any(_local_name(v) in STRUCTURE_ROOT_TYPES for v in t)
+
+
+def normalize_bare_structure(obj):
+    """Recursive normalizations for bare DataStructure documents: collapse
+    framing-inlined component references (cdi:qualifies / cdi:refersTo) back to
+    bare {@id}, and wrap single-valued STRUCTURE_ARRAY_KEYS into arrays."""
+    if isinstance(obj, list):
+        return [normalize_bare_structure(x) for x in obj]
+    if isinstance(obj, dict):
+        out = {}
+        for k, v in obj.items():
+            v = normalize_bare_structure(v)
+            if k in REFERENCE_ONLY_KEYS:
+                v = _collapse_to_id_ref(v)
+            if k in STRUCTURE_ARRAY_KEYS and not isinstance(v, list):
+                v = [v]
+            out[k] = v
+        return out
+    return obj
+
+
 def _is_catalog_record(item):
     """True if the item's schema:additionalType marks it as a catalog record.
 
@@ -237,59 +295,14 @@ def _type_tokens(item):
     return out
 
 
-def _referenced_ids(graph):
-    """@ids that appear *inside* some node -- i.e. that something points at.
-
-    Framing hoists any node matching the frame's root type to the top of
-    @graph, so a dataset's parts land beside the dataset itself when they
-    are Datasets too. The one nothing else points at is the document's
-    subject; the rest are its children.
-    """
-    refs = set()
-
-    def walk(node, owner):
-        if isinstance(node, dict):
-            got = node.get('@id')
-            if isinstance(got, str) and got != owner:
-                refs.add(got)
-            for key, value in node.items():
-                if key != '@id':
-                    walk(value, owner)
-        elif isinstance(node, list):
-            for value in node:
-                walk(value, owner)
-
-    for item in graph:
-        if isinstance(item, dict):
-            owner = item.get('@id')
-            walk({k: v for k, v in item.items() if k != '@id'}, owner)
-    return refs
-
-
 def pick_main_entity(graph, frame):
     """Choose the document's main entity from a framed @graph.
 
-    Profile-agnostic: prefer a node nothing else references (the root of a
-    hasPart tree), then one whose @type matches the frame's root type
+    Profile-agnostic: prefer a node whose @type matches the frame's root type
     (skipping catalog records), then a node with schema:distribution, then one
-    with schema:url, then the first non-catalog-record node.
-
-    The unreferenced-node check has to come FIRST. Without it, a dataset
-    whose parts carry the distributions -- a package of independently
-    accessible resources, where the aggregate itself has no single
-    download -- loses to its own first part on the schema:distribution
-    test, and the validator then reports on the part while silently
-    discarding the dataset. Every such record passed, because the thing
-    being checked was never the thing being described.
-    """
+    with schema:url, then the first non-catalog-record node."""
     candidates = [it for it in graph
                   if isinstance(it, dict) and not _is_catalog_record(it)]
-    if len(candidates) > 1:
-        referenced = _referenced_ids(graph)
-        roots = [it for it in candidates
-                 if it.get('@id') not in referenced]
-        if roots:
-            candidates = roots
     if not candidates:
         return None
     # Dataset-rooted profiles: the main dataset is the one carrying a
@@ -387,6 +400,19 @@ def remove_nulls_and_normalize(obj, parent_key=None):
             if mt is not None and not isinstance(mt, list):
                 result['schema:measurementTechnique'] = [mt]
 
+        # schema:about: array on manifest archive/part nodes (a part pointing at
+        # the part it documents), but a single {@id} inside a schema:subjectOf
+        # catalog record (the back-reference to the described resource). Framing
+        # embeds the referenced node and collapses the single-item array, so wrap
+        # it back -- except inside schema:subjectOf, where the schema types it as
+        # a single object. Keyed on parent_key (not the catalog-record marker,
+        # whose schema:additionalType form varies: 'dcat:CatalogRecord' vs
+        # {'@id': 'dcat:CatalogRecord'}).
+        if parent_key != 'schema:subjectOf':
+            about = result.get('schema:about')
+            if about is not None and not isinstance(about, list):
+                result['schema:about'] = [about]
+
         # schema:encodingFormat: array on DataDownload and on MediaObject
         # (archive member files in schema:hasPart), string on EntryPoint
         if 'schema:DataDownload' in type_list or 'schema:MediaObject' in type_list:
@@ -476,6 +502,12 @@ def frame_cdif_document(doc_path, frame_path=None):
     print("Post-processing output...")
     result = remove_nulls_and_normalize(result)
 
+    # Step 6: For bare DataStructure documents only, apply structure-specific
+    # normalizations (reference collapse + array wrapping) that must NOT run on
+    # Dataset / manifest / data-description docs (same keys, different types).
+    if _is_structure_rooted(doc):
+        result = normalize_bare_structure(result)
+
     return result
 
 
@@ -492,6 +524,71 @@ def _auto_default(patterns, label):
     if len(hits) == 1:
         return str(hits[0])
     return None
+
+
+FRAME_PATTERNS = ['*-frame.jsonld', '*frame*.jsonld']
+
+
+def _local_name(token):
+    """Local name of a type token: strip after the last '/', '#' or ':'.
+    'schema:Dataset' -> 'Dataset'; 'cdi:WideDataStructure' -> 'WideDataStructure';
+    'http://schema.org/Dataset' -> 'Dataset'. Lets a compact frame root match a
+    full-IRI document root and vice versa."""
+    if not isinstance(token, str):
+        return None
+    for sep in ('/', '#', ':'):
+        token = token.rsplit(sep, 1)[-1]
+    return token
+
+
+def _root_type_names(json_path):
+    """Set of local @type names on a JSON(-LD) file's top-level node."""
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            d = json.load(f)
+    except Exception:
+        return set()
+    t = d.get('@type') if isinstance(d, dict) else None
+    if t is None:
+        return set()
+    if isinstance(t, str):
+        t = [t]
+    return {n for n in (_local_name(v) for v in t) if n}
+
+
+def _auto_frames():
+    """All frame files beside this script (deduped, sorted)."""
+    hits, seen = [], set()
+    for pat in FRAME_PATTERNS:
+        for p in sorted(SCRIPT_DIR.glob(pat)):
+            if p.name not in seen:
+                seen.add(p.name)
+                hits.append(p)
+    return hits
+
+
+def _select_frame(input_path):
+    """Pick the frame beside this script for the given input document.
+
+    Zero frames -> None (caller falls back to the minimal Dataset template).
+    One frame  -> that frame (unchanged single-frame behaviour, no matching).
+    Many frames -> the frame whose root @type best matches the document's root
+    @type (by local name). A profile can thus ship a second, differently-rooted
+    frame (e.g. a bare-structure frame alongside the Dataset frame) and have the
+    right one chosen per input. If no frame's root matches, return None so the
+    Dataset template default applies."""
+    frames = _auto_frames()
+    if not frames:
+        return None
+    if len(frames) == 1:
+        return str(frames[0])
+    doc_roots = _root_type_names(input_path)
+    best, best_score = None, 0
+    for fr in frames:
+        score = len(doc_roots & _root_type_names(fr))
+        if score > best_score:
+            best, best_score = fr, score
+    return str(best) if best is not None else None
 
 
 def _load_detect_conformance():
@@ -579,7 +676,7 @@ Examples:
 
     # Resolve auto-detected defaults when not given explicitly.
     schema_path = args.schema or _auto_default(['*Schema*.json', '*schema*.json'], 'schema')
-    frame_path = args.frame or _auto_default(['*-frame.jsonld', '*frame*.jsonld'], 'frame')
+    frame_path = args.frame or _select_frame(args.input)
 
     try:
         framed = frame_cdif_document(args.input, frame_path)
