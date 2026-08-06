@@ -39,7 +39,8 @@
   "schema:distribution": [
     {
       "@type": [
-        "schema:DataDownload"
+        "schema:DataDownload",
+        "schema:Collection"
       ],
       "schema:name": "Geochemistry results archive",
       "schema:contentUrl": "https://example.org/downloads/geochem-results-2025.zip",

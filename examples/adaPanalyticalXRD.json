@@ -101,7 +101,8 @@
   "schema:distribution": [
     {
       "@type": [
-        "schema:DataDownload"
+        "schema:DataDownload",
+        "schema:Collection"
       ],
       "schema:encodingFormat": [
         "application/zip"

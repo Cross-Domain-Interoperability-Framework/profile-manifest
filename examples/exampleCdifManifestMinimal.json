@@ -14,7 +14,7 @@
   },
   "schema:distribution": [
     {
-      "@type": ["schema:DataDownload"],
+      "@type": ["schema:DataDownload", "schema:Collection"],
       "schema:name": "Bundle",
       "schema:contentUrl": "https://example.org/data/bundle.zip",
       "schema:encodingFormat": ["application/zip"],

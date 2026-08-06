@@ -57,7 +57,8 @@
     {
       "@id": "_:b21",
       "@type": [
-        "schema:DataDownload"
+        "schema:DataDownload",
+        "schema:Collection"
       ],
       "schema:contentUrl": "http://www.opengis.net/def/nil/OGC/0/withheld",
       "schema:description": "this data product is distributed in zip archive; contents of the archive are listed as parts. The component files are not individually accessible",
@@ -925,7 +926,8 @@
     {
       "@id": "_:b21",
       "@type": [
-        "schema:DataDownload"
+        "schema:DataDownload",
+        "schema:Collection"
       ],
       "schema:contentUrl": "http://www.opengis.net/def/nil/OGC/0/withheld",
       "schema:description": "this data product is distributed in zip archive; contents of the archive are listed as parts. The component files are not individually accessible",
