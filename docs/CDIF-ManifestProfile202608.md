@@ -214,8 +214,11 @@ The dataset is logically one thing with no pre-existing decomposition,
 but access is always to a subset. **The partitioning is defined by a
 consumer query, not by the producer.** The long-standing problem is how
 to identify such subsets when they are inputs to subsequent analysis, so
-that provenance is accurate and the analysis reproducible. See §7,
-gap 3.
+that provenance is accurate and the analysis reproducible.
+
+This section describes the *service*. **§3.11 describes a particular
+result** drawn from it, which is where that identity problem is
+addressed.
 
 → [`demoExamples/08-webapi-query-subsets.json`](demoExamples/08-webapi-query-subsets.json)
 
@@ -248,6 +251,79 @@ chains; the CDIF `CreateAction` provenance chain captures the same
 pattern and additionally records *what was done*.
 
 → [`demoExamples/10-derived-family.json`](demoExamples/10-derived-family.json)
+
+### 3.11 A cited subset
+
+§3.8 leaves a subset with no identity: the service is described, the
+parameters are declared, but the *result* — the thing an analysis
+actually consumed — cannot be referred to. This pattern gives it one.
+
+A particular query result gets **its own metadata record with its own
+`@id`**, separate from the resource it was drawn from. Three properties
+carry the weight:
+
+- **`prov:wasDerivedFrom`** names the source resource. Its
+  `schema:identifier` is stable across revisions and names the
+  intellectual intention; the subset record's `@id` names one state that
+  was actually used. (See the CDIF Core implementation guide,
+  *identifier and version identify different things*.)
+- **`prov:wasGeneratedBy`** records the request. Its `schema:target` is
+  the `EntryPoint` that was invoked and its `schema:additionalProperty`
+  entries are the parameter *values supplied*, not the patterns they had
+  to match. This mirrors the source's `schema:potentialAction`, which
+  says what *can* be varied; here we say what *was*.
+- **`schema:distribution`** carries `schema:contentUrl` — the request as
+  issued, directly re-runnable — and **`spdx:checksum`**, the hash of
+  what actually came back.
+
+→ [`demoExamples/11-cited-subset.json`](demoExamples/11-cited-subset.json)
+
+#### What this achieves, and what it does not
+
+**It achieves citation and provenance.** The subset has an identifier, a
+lineage, and a reproducible statement of how it was obtained.
+
+**It does not achieve reproducibility on its own**, and a profile that
+implied otherwise would be worse than one that said nothing. A request
+URL identifies the *request*, not the *response*. Re-issued against a
+live service it returns whatever the service holds now — and if the
+source grows (§3.4) or is corrected (§3.9), that is different data.
+
+The checksum is what makes this tolerable: it turns **silent divergence
+into detectable divergence**. A later reader re-runs the query, hashes
+the result, and knows at once whether they are looking at what was
+originally used. They cannot recover the original bytes, but they are
+not misled — which is the failure mode that matters.
+
+Genuine reproducibility needs one more thing, and it is not in the
+metadata's gift: **the source service must be versioned or timestamped**,
+so the query can be re-executed *as of* the original moment. Where that
+holds, record the retrieval time (`schema:startTime` on the activity)
+and the pair is sufficient.
+
+State the ceiling explicitly wherever this pattern is used, so that a
+consumer does not read a subset record as a reproducibility guarantee
+when it is only a divergence check.
+
+#### Relationship to the RDA recommendation
+
+The [RDA Data Citation Working
+Group](https://www.rd-alliance.org/group/data-citation-wg/outcomes/data-citation-recommendation.html)
+addresses the same problem and inverts the identification: assign the
+persistent identifier to a **timestamped query** against **versioned
+source data**, rather than to the result. Re-executing with the original
+timestamp returns what the study used; re-executing with the current
+timestamp returns the same selection with corrections applied.
+[DataCite 4.5](https://datacite-metadata-schema.readthedocs.io/en/4.5/guidance/dynamic-datasets/)
+gives corresponding citation guidance.
+
+The trade is clear. The RDA approach actually reproduces, but only
+because it requires the store to support versioned re-execution — a
+substantial demand on the service. The pattern here needs nothing from
+the server and works against any parameterised endpoint, at the cost of
+detecting rather than preventing divergence. **Where a service does
+implement the RDA recommendations, prefer them**, and use this record
+shape to carry the query PID and its timestamp.
 
 ### Distinctions that are easy to lose
 
@@ -339,12 +415,24 @@ today — just not in the DCAT/DataCite terms §3.9 names. Also absent:
 Whether to adopt the DCAT terms, mint CDIF equivalents, or leave these
 patterns undescribed is a profile decision.
 
-**Gap 3 — a query-derived subset has no identity.** §3.8 describes the
-service and its parameters but gives the *result* no identifier, so an
-analysis consuming a subset cannot cite it reproducibly. Resolving this
-needs either a server-minted identifier for the response or a client-side
-record of the exact request plus a content hash. The profile currently
-has a place for neither.
+**Gap 3 — partly closed; the remainder is not a metadata problem.**
+§3.11 gives a query-derived subset an identity, a lineage and a record of
+the request that produced it, all in existing CDIF vocabulary. That is
+enough to **cite** a subset and to trace its provenance.
+
+What it does not give is reproducibility, and the reason is instructive:
+a request URL identifies the request, not the response, so re-issuing it
+against a live service returns whatever the service now holds. The
+`spdx:checksum` reduces this from silent to detectable — a reader can
+tell they got something different — but recovering the original bytes
+requires the **source service** to support versioned or timestamped
+re-execution. No metadata property can supply that.
+
+So the remaining gap belongs to service implementers rather than to this
+profile. Where a service does implement the
+[RDA Data Citation recommendations](https://www.rd-alliance.org/group/data-citation-wg/outcomes/data-citation-recommendation.html),
+the §3.11 record shape can carry the query PID and its timestamp and the
+problem is solved outright.
 
 **Open — one dataset or many?** §3.9 raises it and this document does not
 settle it: are versions one dataset in several states, or several

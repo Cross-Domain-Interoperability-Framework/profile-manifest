@@ -1,0 +1,135 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "spdx": "http://spdx.org/rdf/terms#",
+    "ex": "https://example.org/"
+  },
+  "@id": "ex:subset/ocean-cube/20260614T093102Z",
+  "@type": [
+    "schema:Dataset"
+  ],
+  "schema:name": "Ocean reanalysis — North Atlantic temperature, 2015-2020",
+  "schema:description": "A citable record for one subset of the data cube in 08-webapi-query-subsets.json. Where 08 describes the service and what can be varied, this describes one result that was actually retrieved and used, so an analysis can cite it. Three things make that possible: an @id of its own, prov:wasDerivedFrom naming the source, and prov:wasGeneratedBy recording the request that produced it. NOTE THE CEILING: the checksum lets a later reader DETECT that re-issuing the request returned something different; it does not let them recover the original bytes. Genuine reproducibility additionally requires the source service to be versioned or timestamped, which is a property of the service and not of this record. See CDIF-ManifestProfile202608.md section 3.11.",
+  "schema:subjectOf": {
+    "@type": [
+      "schema:DataCatalog"
+    ],
+    "dcterms:conformsTo": [
+      {
+        "@id": "https://w3id.org/cdif/core/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/discovery/1.1"
+      },
+      {
+        "@id": "https://w3id.org/cdif/provenance/1.1"
+      }
+    ]
+  },
+  "schema:creator": {
+    "@type": [
+      "schema:Person"
+    ],
+    "schema:name": "Missing"
+  },
+  "prov:wasDerivedFrom": [
+    {
+      "@id": "ex:dataset/ocean-cube",
+      "@type": [
+        "schema:Dataset"
+      ],
+      "schema:name": "Ocean reanalysis data cube",
+      "schema:description": "The source resource. Its schema:identifier is stable across revisions and names the intellectual intention; this subset record's @id names one state that was actually used."
+    }
+  ],
+  "prov:wasGeneratedBy": [
+    {
+      "@id": "ex:subset/ocean-cube/20260614T093102Z/retrieval",
+      "@type": [
+        "schema:Action",
+        "prov:Activity"
+      ],
+      "schema:name": "Subset request",
+      "schema:description": "What was done, mirroring the source's schema:potentialAction, which says what can be done. This is also where the request lives when it cannot be a URL at all — a SPARQL POST, a large WCS payload, or a query whose format is chosen by an Accept header.",
+      "schema:startTime": "2026-06-14T09:31:02Z",
+      "schema:endTime": "2026-06-14T09:33:47Z",
+      "schema:target": {
+        "@type": [
+          "schema:EntryPoint"
+        ],
+        "schema:urlTemplate": "https://example.org/wcs?coverage=temp&bbox={bbox}&time={time}&format={format}",
+        "schema:httpMethod": [
+          "GET"
+        ],
+        "schema:contentType": [
+          "application/x-netcdf"
+        ]
+      },
+      "schema:additionalProperty": [
+        {
+          "@type": [
+            "schema:PropertyValue"
+          ],
+          "schema:name": "bbox",
+          "schema:description": "The value supplied, not the pattern it had to match.",
+          "schema:value": "-80,20,0,65"
+        },
+        {
+          "@type": [
+            "schema:PropertyValue"
+          ],
+          "schema:name": "time",
+          "schema:value": "2015-01-01/2020-12-31"
+        },
+        {
+          "@type": [
+            "schema:PropertyValue"
+          ],
+          "schema:name": "format",
+          "schema:value": "netcdf"
+        }
+      ],
+      "prov:used": [
+        {
+          "@id": "ex:dataset/ocean-cube"
+        }
+      ]
+    }
+  ],
+  "schema:distribution": [
+    {
+      "@type": [
+        "schema:DataDownload"
+      ],
+      "schema:name": "Retrieved subset",
+      "schema:contentUrl": "https://example.org/wcs?coverage=temp&bbox=-80,20,0,65&time=2015-01-01/2020-12-31&format=netcdf",
+      "schema:encodingFormat": [
+        "application/x-netcdf"
+      ],
+      "schema:contentSize": "184320000",
+      "spdx:checksum": {
+        "@type": [
+          "spdx:Checksum"
+        ],
+        "spdx:algorithm": "SHA-256",
+        "spdx:checksumValue": "3f786850e387550fdab836ed7e6dc881de23001b3f786850e387550fdab836ed"
+      }
+    }
+  ],
+  "schema:variableMeasured": [
+    {
+      "@type": [
+        "schema:PropertyValue"
+      ],
+      "schema:name": "sea_water_potential_temperature",
+      "schema:unitText": "degC",
+      "schema:propertyID": [
+        {
+          "@id": "ex:vocab/seaWaterPotentialTemperature"
+        }
+      ]
+    }
+  ]
+}

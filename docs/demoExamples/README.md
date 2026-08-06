@@ -28,6 +28,7 @@ python FrameAndValidate.py docs/demoExamples/01-heterogeneous-parts.json \
 | [08-webapi-query-subsets.json](08-webapi-query-subsets.json) | subset access | **no** `hasPart` at all. A `WebAPI` distribution whose `potentialAction` declares what can be varied; `schema:result` describes what comes back |
 | [09-versioned.json](09-versioned.json) | versions | complete snapshots linked by `prov:wasDerivedFrom` — contrast 04, which grows rather than being replaced |
 | [10-derived-family.json](10-derived-family.json) | derived family | `prov:wasGeneratedBy` a `schema:CreateAction` whose `schema:object` is the input, so each link records what was *done*, not only what it came from |
+| [11-cited-subset.json](11-cited-subset.json) | §3.11 — one result from 08 | its own `@id`, `prov:wasDerivedFrom` the source, `prov:wasGeneratedBy` recording the request **with the parameter values supplied**, and `spdx:checksum` on what came back |
 
 ## The distinctions worth not losing
 
@@ -82,16 +83,32 @@ Whether to adopt the DCAT terms, mint CDIF equivalents, or leave the
 pattern undescribed is a profile decision, not one these examples make.
 Files 04 and 09 flag the borrowed terms in their `schema:description`.
 
-## One open question these do not answer
+## Citing a subset: what 11 achieves, and what it cannot
 
-§Other of the source document asks how to identify a query-derived
-subset (08) so that an analysis using it stays reproducible. Nothing
-here solves it. The record describes the *service* and its parameters;
-it does not give a subset an identity. A provenance trace that cites
-"the result of this query at this time" needs either a server-minted
-identifier for the response or a client-side record of the exact request
-plus a content hash — neither of which the current profile has a place
-for.
+The source document asks how to identify a query-derived subset so that
+an analysis using it stays reproducible. **08 and 11 are two halves of
+the answer**: 08 describes the service and what can be varied, 11
+describes one result that was actually retrieved, with its own `@id`.
+
+That is enough to **cite** a subset and trace its provenance. It is not
+enough to **reproduce** it, and the distinction matters:
+
+- A request URL identifies the *request*, not the *response*. Re-issued
+  against a live service it returns whatever the service holds now.
+- The `spdx:checksum` turns silent divergence into **detectable**
+  divergence — a reader re-running the query knows at once whether they
+  got what was originally used. That is a real gain, and it is the
+  ceiling of what metadata alone can reach.
+- Recovering the original bytes needs the **service** to support
+  versioned or timestamped re-execution. No property in any profile can
+  supply that.
+
+Say so wherever the pattern is used, so nobody reads a subset record as
+a reproducibility guarantee when it is a divergence check. Where a
+service implements the [RDA Data Citation
+recommendations](https://www.rd-alliance.org/group/data-citation-wg/outcomes/data-citation-recommendation.html)
+— a PID on a timestamped query against versioned data — prefer those,
+and use 11's shape to carry the query PID.
 
 ## A defect this work surfaced
 
