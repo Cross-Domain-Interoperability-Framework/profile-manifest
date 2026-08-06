@@ -68,7 +68,7 @@ Where parts are under separate stewardship, put `schema:provider`, `schema:condi
 Use `schema:about` on a part that describes another — a codebook, a data dictionary, a quality report, a metadata sidecar — so a consumer can tell *which* part it documents, rather than only that both are in the package. This is the same relationship OAI-ORE packages express with `cito:documents`; `schema:subjectOf` is its declared inverse.
 
 ### schema:distribution
-If the DataDownload type is application/zip (might need more general way to identify bundled packages of files), then the DataDownload must have hasPart properties that are schema:MediaObject instances describing the contained files. 
+A bundle distribution is marked **positively**, by including `schema:Collection` in its `@type` alongside `schema:DataDownload`. When that marker is present the distribution MUST carry `schema:hasPart` enumerating the member files, each a `schema:MediaObject`. The archive's media type goes in `schema:encodingFormat` and is *not* the trigger — an earlier version keyed off `application/zip`, which meant the rule silently failed to apply to tar, 7z, or any other bundle format. 
 - **Cardinality:** Optional
 
 # Class Definitions

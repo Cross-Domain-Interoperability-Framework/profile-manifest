@@ -86,7 +86,7 @@
             "properties": {
               "schema:hasPart": {
                 "type": "array",
-                "description": "For archive-style distributions (e.g. ZIP files containing multiple component files), describes the component files. Each component is typed as schema:MediaObject and may include CDIF data description extensions (cdifTabularData, cdifDataCube) to describe its internal structure.",
+                "description": "For bundle/archive distributions (positively typed with schema:Collection in @type), describes the component files. Each component is typed as schema:MediaObject and may include CDIF data description extensions (cdifTabularData, cdifDataCube) to describe its internal structure.",
                 "items": {
                   "allOf": [
                     {
@@ -855,15 +855,15 @@
           {
             "if": {
               "properties": {
-                "schema:encodingFormat": {
+                "@type": {
                   "type": "array",
                   "contains": {
-                    "const": "application/zip"
+                    "const": "schema:Collection"
                   }
                 }
               },
               "required": [
-                "schema:encodingFormat"
+                "@type"
               ]
             },
             "then": {

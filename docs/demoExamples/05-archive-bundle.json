@@ -36,7 +36,8 @@
     {
       "@type": [
         "schema:DataDownload",
-        "cdi:PhysicalDataSet"
+        "cdi:PhysicalDataSet",
+        "schema:Collection"
       ],
       "schema:name": "Bundle",
       "schema:contentUrl": "https://example.org/bundles/mission-01.zip",
@@ -103,7 +104,8 @@
             }
           ]
         }
-      ]
+      ],
+      "schema:description": "schema:Collection in @type is what marks this a bundle and triggers the requirement to enumerate hasPart. The archive's media type is stated separately in encodingFormat and is not the trigger -- a positive marker rather than format sniffing."
     }
   ]
 }
