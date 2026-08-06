@@ -36,6 +36,12 @@ SCRIPT_DIR = Path(__file__).parent
 # given document is a harmless no-op, so one list serves every profile.
 ARRAY_PROPERTIES = [
     # schema.org properties -- wrapped to array at any nesting level
+    # schema:about is how an archive part points at the part it
+    # describes. Framing embeds the referenced node, which collapses the
+    # single-item array to a bare object, and the schema declares it an
+    # array -- so without this entry every sidecar reference fails
+    # validation. It was breaking 4 of the 8 examples in this repo.
+    'schema:about',
     'schema:contributor',
     'schema:distribution',
     'schema:license',
