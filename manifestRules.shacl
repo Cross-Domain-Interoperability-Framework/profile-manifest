@@ -48,25 +48,25 @@ cdifd:CDIFDefinedTermShape a sh:NodeShape ;
             sh:path schema:termCode ;
             sh:severity sh:Info ] ;
     sh:target [ a sh:SPARQLTarget ;
-            sh:select """\r
-      PREFIX schema: <http://schema.org/>\r
-      SELECT DISTINCT ?this\r
-        WHERE {\r
-        ?this a schema:DefinedTerm .\r
-        {\r
-          ?this schema:name "example defined term" .\r
-          FILTER NOT EXISTS { ?s ?p ?this . }\r
-        }\r
-        Union\r
-        {\r
-         VALUES ?p {\r
-            schema:linkRelationship\r
-            schema:measurementTechnique\r
-            schema:keywords\r
-            schema:name\r
-          }\r
-         ?s ?p ?this .\r
-        }\r
+            sh:select """
+      PREFIX schema: <http://schema.org/>
+      SELECT DISTINCT ?this
+        WHERE {
+        ?this a schema:DefinedTerm .
+        {
+          ?this schema:name "example defined term" .
+          FILTER NOT EXISTS { ?s ?p ?this . }
+        }
+        Union
+        {
+         VALUES ?p {
+            schema:linkRelationship
+            schema:measurementTechnique
+            schema:keywords
+            schema:name
+          }
+         ?s ?p ?this .
+        }
       }""" ] .
 
 cdifd:CDIFIdentifierShape a sh:NodeShape ;
@@ -86,19 +86,19 @@ cdifd:CDIFIdentifierShape a sh:NodeShape ;
             sh:path schema:propertyID ;
             sh:severity sh:Warning ] ;
     sh:target [ a sh:SPARQLTarget ;
-            sh:select """\r
-      PREFIX schema: <http://schema.org/>\r
-      SELECT DISTINCT ?this\r
-        WHERE {\r
-        ?this a schema:PropertyValue .\r
-        {\r
-          ?this schema:propertyID "example identifier" .\r
-          FILTER NOT EXISTS { ?s ?p ?this . }\r
-        }\r
-        Union\r
-        {\r
-          ?s schema:identifier ?this .\r
-        }\r
+            sh:select """
+      PREFIX schema: <http://schema.org/>
+      SELECT DISTINCT ?this
+        WHERE {
+        ?this a schema:PropertyValue .
+        {
+          ?this schema:propertyID "example identifier" .
+          FILTER NOT EXISTS { ?s ?p ?this . }
+        }
+        Union
+        {
+          ?s schema:identifier ?this .
+        }
       }""" ] .
 
 cdifd:CDIFIdentifierTypeTermShape a sh:NodeShape ;
@@ -117,14 +117,14 @@ cdifd:CDIFIdentifierTypeTermShape a sh:NodeShape ;
     sh:target [ a sh:SPARQLTarget ;
             sh:prefixes ( [ sh:namespace "http://schema.org/" ;
                         sh:prefix "schema" ] ) ;
-            sh:select """\r
-      PREFIX schema: <http://schema.org/>\r
-      SELECT DISTINCT ?this\r
-        WHERE {\r
-          ?this a schema:DefinedTerm .\r
-          FILTER (\r
-            EXISTS { ?s schema:propertyID ?this . }\r
-          )\r
+            sh:select """
+      PREFIX schema: <http://schema.org/>
+      SELECT DISTINCT ?this
+        WHERE {
+          ?this a schema:DefinedTerm .
+          FILTER (
+            EXISTS { ?s schema:propertyID ?this . }
+          )
         }""" ] .
 
 cdifd:CDIFManifestConformsToShape a sh:NodeShape ;
