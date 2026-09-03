@@ -3,7 +3,7 @@
 # GENERATED FILE -- DO NOT EDIT.
 # Synced from CDIF/validation/tools/FrameAndValidate.py (the normative source).
 # Edit there, then run:  python tools/sync_frameandvalidate.py --apply
-# src-sha256: 510885c4d90da0ffdc044aa09119597bad5f31a3040a7511d958282101f3c6cb
+# src-sha256: a71481f49d86f24d0adba856d8cc0ba997db4e152683357a685a7c2d3bf341f9
 # <<< CDIF-SYNC GENERATED <<<
 
 """
@@ -727,6 +727,12 @@ def _load_detect_conformance():
     if env:
         cands.append(Path(env))
     cands += [SCRIPT_DIR, SCRIPT_DIR.parent, SCRIPT_DIR.parent.parent]
+    # A release-repo copy sits at its repo root, with the validation repo
+    # checked out as a sibling, so look for CDIF/validation/ from one and two
+    # levels up as well. Without this the check silently no-ops in exactly the
+    # repos whose examples it is meant to check.
+    cands += [SCRIPT_DIR.parent / 'validation',
+              SCRIPT_DIR.parent.parent / 'validation']
     for c in cands:
         if c and (c / 'detect_conformance.py').is_file():
             if str(c) not in sys.path:
@@ -750,6 +756,109 @@ def detect_and_apply_conformance(framed):
     uris = detect_fn(framed)
     apply_fn(framed, uris)
     return uris
+
+
+# Mirrors detect_conformance.CDIF_BASE: the profile space CDIF manages. Claims
+# outside it (a project or domain profile) are the record's own business, and
+# apply_conformance preserves them, so they are never reported as inconsistent.
+CDIF_URI_PREFIX = "https://w3id.org/cdif/"
+
+
+def _declared_conformance(doc):
+    """The dcterms:conformsTo URIs the record declares on schema:subjectOf.
+
+    Tolerates subjectOf being a dict or a list, and each conformsTo entry being
+    either {"@id": uri} or a plain string."""
+    subj = doc.get("schema:subjectOf")
+    if isinstance(subj, dict):
+        subj = [subj]
+    if not isinstance(subj, list):
+        return set()
+    out = set()
+    for s in subj:
+        if not isinstance(s, dict):
+            continue
+        claims = s.get("dcterms:conformsTo")
+        if isinstance(claims, (dict, str)):
+            claims = [claims]
+        for entry in (claims or []):
+            if isinstance(entry, dict):
+                entry = entry.get("@id")
+            if isinstance(entry, str):
+                out.add(entry)
+    return out
+
+
+def check_conformance_consistency(framed, source_doc=None):
+    """Compare what the record CLAIMS to conform to against what its content
+    actually supports, per detect_conformance.
+
+    Returns None when detect_conformance is unavailable -- the release-repo
+    copies of this script do not ship it, so the check degrades to a no-op
+    there rather than failing.
+
+    Both halves are read from `source_doc` (the document as authored) when one
+    is given. Framing is lossy in both directions: it can drop schema:subjectOf
+    outright, so the declaration would read as "declares nothing"; and evidence
+    below schema:distribution does not survive it, so detection under-reports
+    and a correct record looks like it is over-claiming."""
+    detect_fn, _ = _load_detect_conformance()
+    if detect_fn is None:
+        return None
+    # Only profiles the registry can actually produce are comparable. Declaring
+    # one it has no rule for (codelist, complexCitation, ...) would otherwise
+    # look like an over-claim every single time.
+    try:
+        from detect_conformance import CONFORMANCE_CLASSES
+        detectable = {c["uri"] for c in CONFORMANCE_CLASSES}
+    except Exception:
+        detectable = None
+    subject = source_doc if source_doc is not None else framed
+    detected = {u for u in (detect_fn(subject) or [])
+                if u.startswith(CDIF_URI_PREFIX)}
+    declared_all = _declared_conformance(subject)
+    declared = {u for u in declared_all if u.startswith(CDIF_URI_PREFIX)}
+    comparable = declared if detectable is None else (declared & detectable)
+    return {
+        'declared': sorted(declared),
+        'detected': sorted(detected),
+        'overclaimed': sorted(comparable - detected),
+        'undeclared': sorted(detected - declared),
+        'other': sorted(declared_all - declared),
+        'unchecked': sorted(declared - comparable),
+        'lost_in_framing': bool(declared and not _declared_conformance(framed)),
+    }
+
+
+def report_conformance_consistency(report):
+    """Print the declared-vs-detected comparison. Returns True when they agree."""
+    print()
+    print("Checking declared conformsTo against detected conformance...")
+    if report['lost_in_framing']:
+        print("  NOTE: the source declares conformsTo but framing dropped "
+              "schema:subjectOf, so the declaration was read from the source "
+              "document. The framed output declares nothing.")
+    if not report['declared'] and not report['detected']:
+        print("  No CDIF conformsTo declared and none detected.")
+    for uri in report['overclaimed']:
+        print("  DECLARED BUT NOT DETECTED: %s" % uri)
+    for uri in report['undeclared']:
+        print("  DETECTED BUT NOT DECLARED: %s" % uri)
+    for uri in report.get('unchecked') or []:
+        print("  not checked (no detection rule): %s" % uri)
+    for uri in report['other']:
+        print("  (outside the CDIF profile space, not checked: %s)" % uri)
+    agree = not report['overclaimed'] and not report['undeclared']
+    if agree and report['declared']:
+        n = len(report['declared']) - len(report.get('unchecked') or [])
+        print("  Conformance CONSISTENT: %d declared CDIF profile(s) match the "
+              "detected conformance." % n)
+    elif report['overclaimed']:
+        print("  Conformance FAILED: %d over-claimed profile(s) - declared but "
+              "not supported by the content" % len(report['overclaimed']))
+    else:
+        print("  Conformance INCONSISTENT (under-claimed only; advisory)")
+    return agree
 
 
 def validate_against_schema(framed, schema_path):
@@ -797,6 +906,7 @@ Examples:
                              'to declare them (requires detect_conformance.py from the validation repo)')
 
     args = parser.parse_args()
+    overclaimed = []
 
     # Resolve auto-detected defaults when not given explicitly.
     schema_path = args.schema or _auto_default(['*Schema*.json', '*schema*.json'], 'schema')
@@ -828,6 +938,24 @@ Examples:
                 print("Error: no schema given and could not auto-detect a single "
                       "*Schema*.json beside this script; pass --schema.", file=sys.stderr)
                 sys.exit(2)
+            # Among the validation tests: does the record's declared
+            # conformsTo agree with what its content actually supports?
+            # Skipped after --conformance, which has just rewritten the
+            # declaration to the detected set, making agreement trivial.
+            if not args.conformance:
+                try:
+                    with open(args.input, "r", encoding="utf-8") as f:
+                        source_doc = json.load(f)
+                except Exception:
+                    source_doc = None
+                report = check_conformance_consistency(framed, source_doc)
+                if report is None:
+                    print("\nConformance check skipped: detect_conformance.py "
+                          "not found (or rdflib missing).")
+                else:
+                    report_conformance_consistency(report)
+                    overclaimed = report['overclaimed']
+
             print("\nValidating against schema...")
             result = validate_against_schema(framed, schema_path)
 
@@ -839,6 +967,15 @@ Examples:
                 for error in result['errors']:
                     path = '/'.join(str(p) for p in error.absolute_path) if error.absolute_path else '/'
                     print(f"  - /{path}: {error.message}")
+                sys.exit(1)
+
+            # Deferred to here so a schema failure reports its errors first
+            # rather than being masked by the conformance exit.
+            if overclaimed:
+                print("\nFAILED: conformsTo declares %d profile(s) the content "
+                      "does not support:" % len(overclaimed))
+                for uri in overclaimed:
+                    print("  %s" % uri)
                 sys.exit(1)
 
         print("\nDone!")
