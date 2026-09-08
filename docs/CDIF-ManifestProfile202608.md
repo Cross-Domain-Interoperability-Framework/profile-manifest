@@ -10,49 +10,27 @@ here §3). Worked JSON-LD scaffolding for every pattern in §3 is in
 
 ## 1. Overview
 
-Within the set of FAIR functions supported by the CDIF guidelines is a
-practical need to construct packages of interdependent resources. FAIR
-does not directly address this need, but experience has shown that the
-interlinked nature of data and metadata resources demands that meaningful
-packages can be assembled for different purposes.
+Within the set of FAIR functions supported by the CDIF guidelines is a practical need to construct packages of interdependent resources. FAIR does not directly address this need, but experience has shown that the interlinked nature of data and metadata resources demands that meaningful packages can be assembled for different purposes.  
 
-This requirement appears in different forms. Researchers must be able to
-collect and group the various resources involved in their research, so
-that sense can be made of it for the purposes of replication,
-comprehension, and reuse. Archives and repositories have a requirement
-for packages of related resources to be submitted and stored, and these
-form the basis for dissemination. There is the popular concept of a FAIR
-Digital Object (FDO) which can be anything FAIR — even an atomic metadata
-item — but in practical terms requires that coherent packages be
-assembled to support practical use.
+This requirement appears in different forms. Researchers must be able to collect and group the various products of their research, so that sense can be made of results for the purposes of replication, comprehension, and reuse. Archives and repositories have a requirement for identifiable packages of related resources to be submitted and stored, and these form the basis for dissemination. A resource might be distributed with content in different languages, with the intention that the information content is the same. A FAIR Digital Object (FDO) can be anything FAIR — even an atomic metadata item, but coherent, identifiable packages need to be assembled for distribution to support practical use.
 
-In a networked scenario, it may not always be the case that every
-required resource is stored at the same location or is found within the
-same repository (even a distributed one). In such a case, the idea of a
-"package" is not so much a physical assembly as it is a list of needed
-resources and the addresses — local or otherwise — which can be used to
-retrieve them. Different scenarios of use will impose different
-restrictions on how such packages need to be stored, but in their most
-basic form, they are a list of resources and locations: a manifest.
+In a networked information environment, every required resource might not be  accessed from the same network location. Given this, the idea of a "package" is not so much a physical assembly as it is a list of resources and the access information required to retrieve them. Different scenarios of use will impose different restrictions on how the components of such packages are stored and accessed.  The foundational requirement is a list of component resources and locations: a manifest.
 
 What CDIF offers as a core profile to support packaging is exactly this:
 the core items which make up a manifest. This model can be implemented in
 different ways — it could be an RO-Crate, a Frictionless Data Package,
-etc. At the core of all such specifications is a very simple construct
-which is presented here, along with an implementation in RO-Crate.
+etc. At the core of all such specifications is a simple construct presented here, along with an implementation in RO-Crate.
 
-This document outlines the basic requirement, the kinds of aggregate
-resource the model has to cover, the conceptual model, and the specific
+This document outlines the basic requirements, the kinds of aggregate
+resource the model is intended to cover, the conceptual model, and the specific
 implementation.
 
 ## 2. Requirements
 
 1. A manifest must allow for the retrieval of complete packages of
-   related resources sufficient to support the FAIR use of a data or
-   metadata object.
+   related resources sufficient to support the FAIR use of a described information resource. 
 
-2. It must contain a listing of each of its component parts, along with
-   needed identifiers, descriptors, typing, and characterization so that
+2. It must contain a list of component parts, along with needed identifiers, descriptors, typing, and characterization so that
    both humans and machines can understand its relationship to other
    parts of the package.
 
@@ -179,7 +157,7 @@ typed `schema:MediaObject` and **must not** be typed
 A dataset with multiple distributions, where the distributions are
 different representations of the same content: a geologic map in
 shapefile and geopackage and several spatial reference systems; tabular
-data in Excel and CSV.
+data in Excel and CSV; a document or dataset with content encoded in different languages.
 
 Each distribution is a complete, interchangeable copy. A consumer picks
 one; nothing is assembled.
@@ -226,8 +204,7 @@ addressed.
 
 The same dataset at different points in its revision history — not
 growing as in §3.4, but replaced or corrected. Version 1.0, 1.1, 2.0,
-each a complete snapshot. The parts are temporal versions of the same
-intellectual content.
+each a complete snapshot. The parts are temporal versions of the intellectual content, but some aspects might be modified, content added or removed.
 
 The question is whether the versions constitute one dataset with multiple
 states or multiple datasets with a lineage relationship. DataCite and
@@ -283,8 +260,7 @@ carry the weight:
 **It achieves citation and provenance.** The subset has an identifier, a
 lineage, and a reproducible statement of how it was obtained.
 
-**It does not achieve reproducibility on its own**, and a profile that
-implied otherwise would be worse than one that said nothing. A request
+**It does not achieve reproducibility on its own**, a request
 URL identifies the *request*, not the *response*. Re-issued against a
 live service it returns whatever the service holds now — and if the
 source grows (§3.4) or is corrected (§3.9), that is different data.
@@ -293,17 +269,12 @@ The checksum is what makes this tolerable: it turns **silent divergence
 into detectable divergence**. A later reader re-runs the query, hashes
 the result, and knows at once whether they are looking at what was
 originally used. They cannot recover the original bytes, but they are
-not misled — which is the failure mode that matters.
+not misled.
 
-Genuine reproducibility needs one more thing, and it is not in the
-metadata's gift: **the source service must be versioned or timestamped**,
+Genuine reproducibility requires that **the source service must be versioned or timestamped**,
 so the query can be re-executed *as of* the original moment. Where that
 holds, record the retrieval time (`schema:startTime` on the activity)
-and the pair is sufficient.
-
-State the ceiling explicitly wherever this pattern is used, so that a
-consumer does not read a subset record as a reproducibility guarantee
-when it is only a divergence check.
+and the pair is sufficient. State the policies of the data source explicitly, so that a consumer does not read a subset record as a reproducibility guarantee when it is only a divergence check.
 
 #### Relationship to the RDA recommendation
 
@@ -317,31 +288,25 @@ timestamp returns the same selection with corrections applied.
 [DataCite 4.5](https://datacite-metadata-schema.readthedocs.io/en/4.5/guidance/dynamic-datasets/)
 gives corresponding citation guidance.
 
-The trade is clear. The RDA approach actually reproduces, but only
-because it requires the store to support versioned re-execution — a
-substantial demand on the service. The pattern here needs nothing from
-the server and works against any parameterised endpoint, at the cost of
-detecting rather than preventing divergence. **Where a service does
+The RDA approach supports reproducability because it requires the store to support versioned re-execution. This is a substantial demand on the service. The CDIF pattern proposed here needs nothing from the server and works against any parameterised endpoint, but it can only detect divergence. **Where a service does
 implement the RDA recommendations, prefer them**, and use this record
 shape to carry the query PID and its timestamp.
 
-### Distinctions that are easy to lose
+### Distinctions that require attention
 
-Three pairs read alike in prose and must be modelled differently. A
-record that confuses them still validates.
+A record that confuses these situations  still validates:
 
 - **`hasPart` versus several distributions.** Use `hasPart` when the
   parts together constitute the dataset and no single one gives you the
   whole (§3.1, §3.2, §3.5, §3.7). Use several distributions when each is
   a complete interchangeable copy and a consumer picks exactly one
   (§3.6).
-- **§3.6 versus §3.7.** Identical content in a different encoding is a
-  distribution. Content that has lost detail through aggregation is a
-  separate Dataset.
+- **§3.6 versus §3.7.** Identical content in a different encoding is a different distribution. Content that has lost detail through aggregation is a
+  separate Dataset part.
 - **§3.4 versus §3.9.** Both change over time. §3.4 accumulates under a
   stable identity; §3.9 replaces one complete snapshot with another.
 
-### `schema:hasPart` means four different things
+### `schema:hasPart` can mean different things
 
 It is the same property name in all four cases, and the item shape
 differs in each. What disambiguates them is **which object the property
@@ -351,9 +316,12 @@ graph must track where it is.
 | on this object | the parts are | shape |
 |---|---|---|
 | `schema:Dataset` | package members, independently accessible, each at its own address | `resourcePartArray` |
+|---|---|---|
 | a `schema:distribution` item | component files inside an archive, with no address of their own | `archivePartArray` |
+|---|---|---|
 | `schema:instrument` | sub-components of an instrument system | `InstrumentComponent` |
-| bioschemas `ComputationalWorkflow` | sub-workflows and component tools | inline |
+|---|---|---|
+| `bioschema:ComputationalWorkflow` | sub-workflows and component tools | inline |
 
 The first two are the ones this profile defines, and they are the pair
 most easily confused. The test is whether a part can be retrieved on its
@@ -367,35 +335,33 @@ else, it belongs on the distribution and **must not** be typed
 | element | | description |
 |---|---|---|
 | Protocol conformance statement | **R** | What protocol is used to constitute the package being described, and to which the supplied information conforms (RO-Crate, Frictionless Data, etc.) |
+|---|---|---|
 | Package identification | **R** | A unique identifier for the package, according to a known scheme |
+|---|---|---|
 | Package name | O | A human-readable name for the package, to help distinguish it from others |
+|---|---|---|
 | Package description | O | A human-readable description of the package, its contents and purpose |
+|---|---|---|
 | Package date | O | The date of creation of the package (may include time) |
+|---|---|---|
 | Package creator | O | Information about the creator of the package, for attribution. May contain contact information |
+|---|---|---|
 | Location information | **R** | Information needed to resolve item locations, such as a root directory |
+|---|---|---|
 | Typed item list | **R** | The items which are the parts of the package. Each has an ID and a location, local or networked, with the package's location information sufficient to resolve it. Items may be categorized by types meaningful to the packaging mechanism (MIME types, etc.) and/or semantically (e.g. "data entities", "context entities") |
+|---|---|---|
 | Licensing information | O | Under IP law an assemblage can be licensed differently from its constituent parts. This license is for the package; parts may carry their own |
 
 **R** = required, **O** = optional.
 
 ## 5. RO-Crate implementation
 
-> **Incomplete in the source document.** The bullets below are what
-> `CDIF Manifest Profile-V1-smr.docx` contains; it ends with three empty
-> list items. Nothing has been invented to fill them.
+- A flattened, condensed JSON-LD file, per the RO-Crate 1.2 specification.
+- `@type` of `CreativeWork`, as in RO-Crate 1.2. (`schema:Collection` is   tempting, but we need none of its properties, so `CreativeWork` is   appropriate.)
+- `ro-crate-metadata.json` as the graph `@id`; the file is named `ro-crate-metadata.json` and appears in the root, per the RO-Crate 1.2 specification.
 
-- A flattened, condensed JSON-LD file, per the RO-Crate 1.2
-  specification.
-- `@type` of `CreativeWork`, as in RO-Crate 1.2. (`schema:Collection` is
-  tempting, but we need none of its properties, so `CreativeWork` is
-  appropriate.)
-- `ro-crate-metadata.json` as the graph `@id`; the file is named
-  `ro-crate-metadata.json` and appears in the root, per the RO-Crate 1.2
-  specification.
-- *(to be completed)*
 
-See [`RO-Crate-relationship.md`](RO-Crate-relationship.md) for the wider
-comparison.
+See [`RO-Crate-relationship.md`](RO-Crate-relationship.md) for the wider comparison.
 
 ## 6. CDIF JSON-LD implementation
 
@@ -426,22 +392,20 @@ constrains or documents them and no consumer is obliged to understand
 them. This is the most consequential gap: update frequency is the single
 thing a consumer of an open-ended dataset most needs to know.
 
-**Gap 2 — version lineage is expressible, but not in the named
-vocabulary.** `schema:isBasedOn`, `dcterms:isVersionOf` and
+**Gap 2 — version lineage is expressible, but not in the named vocabulary.** `schema:isBasedOn`, `dcterms:isVersionOf` and
 `dcterms:replaces` are undefined in CDIF. `prov:wasDerivedFrom` **is**
 defined and carries the lineage in the §3.9 example, so the pattern works
 today — just not in the DCAT/DataCite terms §3.9 names. Also absent:
 `schema:isPartOf`, so a part cannot point back at its aggregate.
 
-Whether to adopt the DCAT terms, mint CDIF equivalents, or leave these
-patterns undescribed is a profile decision.
+Whether to adopt the DCAT terms, mint CDIF equivalents, or leave these patterns undescribed is a profile decision.
 
 **Gap 3 — partly closed; the remainder is not a metadata problem.**
 §3.11 gives a query-derived subset an identity, a lineage and a record of
 the request that produced it, all in existing CDIF vocabulary. That is
 enough to **cite** a subset and to trace its provenance.
 
-What it does not give is reproducibility, and the reason is instructive:
+What it does not give is reproducibility:
 a request URL identifies the request, not the response, so re-issuing it
 against a live service returns whatever the service now holds. The
 `spdx:checksum` reduces this from silent to detectable — a reader can
@@ -461,29 +425,3 @@ datasets in a lineage? The example takes the DataCite reading. Both are
 defensible; the choice should be made explicitly rather than by default.
 
 ---
-
-## Editorial note
-
-Merged and lightly copy-edited from the two source documents. Changes
-beyond formatting:
-
-- Typographic corrections carried over from the docx: *radable* →
-  readable, *charaterization* → characterization, *procssing* →
-  processing, *govenment* → government, *separatly* → separately, and
-  "The **data** of the creation of the package" → *date*.
-- The conceptual model became a table; requirement 5's trailing note on
-  FDOs became a sentence rather than a parenthetical.
-- Two of the taxonomy's items were split, because each described two
-  cases the model treats differently. Item 1 became §3.1 and §3.2 (its
-  own text introduces the federated case with "Includes…", and the
-  federated case puts provider and access properties on the parts rather
-  than the aggregate). Item 2 became §3.3 and §3.4 — it states outright
-  that "there are two cases here", closed and open-ended, and only the
-  second needs accrual metadata. Its examples were divided accordingly.
-  So §3.n does not map one-to-one onto the source's numbering.
-- The taxonomy's cross-reference in the versioning paragraph read "not
-  growing (#5)", but growing collections were item 2 of that document and
-  #5 was multi-resolution. Corrected here to §3.4.
-- The RO-Crate section's three empty bullets are marked *(to be
-  completed)* rather than dropped, since their absence is itself the
-  state of the work.
