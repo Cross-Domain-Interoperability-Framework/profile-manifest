@@ -10,7 +10,14 @@ This document describes the property-level correspondences, the structural diffe
 - **`ROCrateToCDIF.py`** -- RO-Crate 1.2 `@graph` form → CDIF nested JSON-LD
 - **`ValidateROCrate.py`** -- Validates RO-Crate structural conformance
 
-All tools are in the `tools/` directory of this repository.
+The tools moved out of this repository on 2026-09-08. They now live in the CDIF `validation`
+repo at [`validation/converters/ROCrate/`](https://github.com/Cross-Domain-Interoperability-Framework/validation/tree/main/converters/ROCrate),
+beside the other format converters (DCAT, DDI, DDICodebook, Croissant, SOSO), with their own
+README and `requirements.txt`. They are format converters rather than profile artifacts. This
+document stays here: it is about the relationship between the manifest profile and RO-Crate,
+not about running the tools.
+
+The command lines below are written as if run from that directory.
 
 ## What is RO-Crate?
 
@@ -177,10 +184,10 @@ Transforms CDIF JSON-LD (nested, `schema:`-prefixed) into RO-Crate 1.2 form (fla
 
 ```bash
 # Convert and save
-python tools/ConvertToROCrate.py input.jsonld -o output-rocrate.jsonld
+python ConvertToROCrate.py input.jsonld -o output-rocrate.jsonld
 
 # Verbose output
-python tools/ConvertToROCrate.py input.jsonld -o output.jsonld -v
+python ConvertToROCrate.py input.jsonld -o output.jsonld -v
 ```
 
 #### How the CDIF → RO-Crate Conversion Works
@@ -225,16 +232,16 @@ Converts an RO-Crate 1.2 document (flat `@graph`) into a CDIF-compliant nested J
 
 ```bash
 # Convert RO-Crate to CDIF
-python tools/ROCrateToCDIF.py input-rocrate.jsonld -o cdif-output.json
+python ROCrateToCDIF.py input-rocrate.jsonld -o cdif-output.json
 
 # Convert targeting CDIF Discovery profile
-python tools/ROCrateToCDIF.py input-rocrate.jsonld -o output.json --profile discovery
+python ROCrateToCDIF.py input-rocrate.jsonld -o output.json --profile discovery
 
 # Convert and validate against CDIF Complete schema
-python tools/ROCrateToCDIF.py input-rocrate.jsonld -o output.json -v --validate
+python ROCrateToCDIF.py input-rocrate.jsonld -o output.json -v --validate
 
 # Use a custom schema for validation
-python tools/ROCrateToCDIF.py input-rocrate.jsonld -o output.json --validate --schema path/to/schema.json
+python ROCrateToCDIF.py input-rocrate.jsonld -o output.json --validate --schema path/to/schema.json
 ```
 
 **Options:**
@@ -301,16 +308,16 @@ Validates an RO-Crate document (optionally converting from CDIF first) against R
 
 ```bash
 # Convert CDIF to RO-Crate form and validate
-python tools/ValidateROCrate.py input.jsonld
+python ValidateROCrate.py input.jsonld
 
 # Validate a document already in @graph form (skip conversion)
-python tools/ValidateROCrate.py input-rocrate.jsonld --no-convert
+python ValidateROCrate.py input-rocrate.jsonld --no-convert
 
 # Convert, validate, and save the RO-Crate output
-python tools/ValidateROCrate.py input.jsonld -o output-rocrate.json
+python ValidateROCrate.py input.jsonld -o output-rocrate.json
 
 # Verbose output
-python tools/ValidateROCrate.py input.jsonld -v
+python ValidateROCrate.py input.jsonld -v
 ```
 
 **Options:**
@@ -372,10 +379,10 @@ A complete round-trip demonstrating both conversions:
 ```bash
 # Start with CDIF metadata (e.g., an archive distribution)
 # Step 1: Convert CDIF → RO-Crate
-python tools/ConvertToROCrate.py metadata.json -o metadata-rocrate.json -v
+python ConvertToROCrate.py metadata.json -o metadata-rocrate.json -v
 
 # Step 2: Convert RO-Crate → CDIF
-python tools/ROCrateToCDIF.py metadata-rocrate.json -o metadata-roundtrip.json -v --validate
+python ROCrateToCDIF.py metadata-rocrate.json -o metadata-roundtrip.json -v --validate
 ```
 
 ## What is Preserved, What is Lost

@@ -31,7 +31,7 @@ Worth knowing because a useful sanity check — frame every example and compare 
 
 ## RO-Crate interop
 
-A separate set of converter scripts and the prior packaging exploration live under `tools/` and `docs/`. Those are working materials and not part of the release-artifact set.
+The RO-Crate converter scripts moved to the CDIF `validation` repo on 2026-09-08 — [`validation/converters/ROCrate/`](https://github.com/Cross-Domain-Interoperability-Framework/validation/tree/main/converters/ROCrate) — beside the other format converters, and `tools/` is gone from this repo. The prior packaging exploration stays in [`docs/RO-Crate-relationship.md`](docs/RO-Crate-relationship.md), which describes how this profile relates to RO-Crate. Neither is part of the release-artifact set.
 
 ## Synced from metadataBuildingBlocks
 

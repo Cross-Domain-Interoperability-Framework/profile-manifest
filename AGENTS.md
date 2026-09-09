@@ -24,7 +24,7 @@ Source profile dir: `metadataBuildingBlocks/_sources/profiles/cdifProfile/cdifMa
 
 ## Working materials (non-release)
 
-`tools/` and `docs/` carry the prior packaging / RO-Crate exploration. These are kept for traceability but are not part of the release artifact set. The canonical release files are `cdifManifestStructuredSchema.json`, `manifestRules.shacl`, `cdifManifest-frame.jsonld`, `FrameAndValidate.py`, and `examples/`.
+`docs/` carries the prior packaging / RO-Crate exploration, kept for traceability but not part of the release artifact set. `tools/` is gone: the three RO-Crate converters and their requirements.txt moved to `validation/converters/ROCrate/` on 2026-09-08, being format converters rather than profile artifacts. (The `tools/resolve_schema.py` and `tools/validate_shacl.py` invocations above are metadataBuildingBlocks' tools, run from that repo.) The canonical release files are `cdifManifestStructuredSchema.json`, `manifestRules.shacl`, `cdifManifest-frame.jsonld`, `FrameAndValidate.py`, and `examples/`.
 
 ## Example conventions
 

@@ -1,0 +1,4 @@
+# Python bytecode. __pycache__/ alone misses a .pyc that ends up outside that
+# directory -- e.g. carried along when files are moved between repos.
+__pycache__/
+*.pyc
