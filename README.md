@@ -44,11 +44,12 @@ These generated artifacts are re-synced when the source register changes:
 
 Source profile: `_sources/profiles/cdifProfile/cdifManifest/`.
 
-## Changelog — reviewRevision202606 (updates since branched from `main`)
+## Changelog — v1.1.0
 
-This release-review branch has diverged from `main` with the following updates,
-synced from the CDIF **metadataBuildingBlocks** source (see
-`git log main..reviewRevision202606` for the full per-commit history):
+Released 2026-09-10 as `v1.1.0`. Content synced from the CDIF
+**metadataBuildingBlocks** source; see the
+[release](../../releases/tag/v1.1.0) for the tagged snapshot and
+`git log v1.1.0` for the per-commit history:
 
 - **Populated from metadataBuildingBlocks** — `*StructuredSchema.json`, merged SHACL,
   JSON-LD frame, examples, and the normative `FrameAndValidate.py` generated from the
@@ -75,9 +76,15 @@ synced from the CDIF **metadataBuildingBlocks** source (see
   string, `skos:notation` → string, `schema:additionalType` URI → `{@id}`).
 
 
-## Development branch
+## Branches
 
-Active work for the 2026-06 review revision is on the `reviewRevision202606` branch. `main` reflects the prior release state. New changes should target the review branch; it is merged to main on release.
+`main` is the **current release** — GitHub Pages serves it, so the published
+URLs always show the newest release. It is protected: changes reach it only by
+pull request, which means the merge *is* the release.
+
+New work goes on the **`updates`** branch and is merged to `main` when a release
+is cut, then tagged `v1.1.n`. The former `reviewRevision202606` branch is retained
+as **`archive202609`**.
 
 ## License
 
