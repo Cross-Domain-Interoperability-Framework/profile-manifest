@@ -438,7 +438,7 @@
                                                 ]
                                               },
                                               {
-                                                "$ref": "#/$defs/cdifConcept"
+                                                "$ref": "#/$defs/Concept"
                                               }
                                             ]
                                           }
@@ -824,7 +824,7 @@
                                             ]
                                           },
                                           {
-                                            "$ref": "#/$defs/cdifConcept"
+                                            "$ref": "#/$defs/Concept"
                                           }
                                         ]
                                       }
@@ -948,19 +948,47 @@
     }
   },
   "$defs": {
-    "cdifConcept": {
+    "Concept": {
       "type": "object",
       "properties": {
         "@context": {
           "description": "JSON-LD context declaring the skos namespace prefix. May be a single object or an array of strings and objects.",
-          "type": "object",
-          "properties": {
-            "skos": {
-              "const": "http://www.w3.org/2004/02/skos/core#"
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "skos": {
+                  "const": "http://www.w3.org/2004/02/skos/core#"
+                }
+              },
+              "required": [
+                "skos"
+              ]
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              },
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "skos": {
+                    "const": "http://www.w3.org/2004/02/skos/core#"
+                  }
+                },
+                "required": [
+                  "skos"
+                ]
+              }
             }
-          },
-          "required": [
-            "skos"
           ]
         },
         "@id": {
@@ -1022,8 +1050,104 @@
             }
           ]
         },
+        "skos:scopeNote": {
+          "description": "Note clarifying meaning and/or intended use.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/LanguageTaggedValue"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/LanguageTaggedValue"
+                  }
+                ]
+              }
+            }
+          ]
+        },
         "skos:note": {
           "description": "General note about this concept.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/LanguageTaggedValue"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/LanguageTaggedValue"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "skos:historyNote": {
+          "description": "Note about past state or use.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/LanguageTaggedValue"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/LanguageTaggedValue"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "skos:changeNote": {
+          "description": "Note documenting a change.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/LanguageTaggedValue"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/LanguageTaggedValue"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "skos:editorialNote": {
+          "description": "Note for editors and maintainers.",
           "anyOf": [
             {
               "type": "string"
@@ -1078,6 +1202,38 @@
             }
           ]
         },
+        "skos:topConceptOf": {
+          "description": "Concept scheme(s) for which this is a top concept.",
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "@id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "@id"
+              ]
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "@id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "@id"
+                ]
+              }
+            }
+          ]
+        },
         "skos:broader": {
           "description": "Broader (parent) concepts in the hierarchy. Items are inline concept objects or @id references.",
           "type": "array",
@@ -1086,7 +1242,7 @@
               {
                 "type": "object",
                 "additionalProperties": false,
-                "description": "Reference (by URI) to a skos:Concept defined elsewhere. Used inside skos:broader / skos:narrower as the @id-reference alternative to an inline Concept.",
+                "description": "A reference to a SKOS Concept by URI.",
                 "properties": {
                   "@id": {
                     "type": "string",
@@ -1098,7 +1254,7 @@
                 ]
               },
               {
-                "$ref": "#/$defs/cdifConcept"
+                "$ref": "#/$defs/Concept"
               }
             ]
           }
@@ -1111,7 +1267,7 @@
               {
                 "type": "object",
                 "additionalProperties": false,
-                "description": "Reference (by URI) to a skos:Concept defined elsewhere. Used inside skos:broader / skos:narrower as the @id-reference alternative to an inline Concept.",
+                "description": "A reference to a SKOS Concept by URI.",
                 "properties": {
                   "@id": {
                     "type": "string",
@@ -1123,7 +1279,7 @@
                 ]
               },
               {
-                "$ref": "#/$defs/cdifConcept"
+                "$ref": "#/$defs/Concept"
               }
             ]
           }
@@ -1131,12 +1287,14 @@
       },
       "required": [
         "@type",
-        "skos:prefLabel"
+        "skos:prefLabel",
+        "skos:definition",
+        "skos:inScheme"
       ]
     },
     "LanguageTaggedValue": {
       "type": "object",
-      "description": "An RDF literal value with a language tag, serialized as a JSON-LD value object. Inlined from skosConcept (the resolver does not preserve cross-file '#/$defs/...' fragment refs).",
+      "description": "An RDF literal value with a language tag, serialized as a JSON-LD value object.",
       "properties": {
         "@value": {
           "type": "string",
@@ -1148,7 +1306,8 @@
         }
       },
       "required": [
-        "@value"
+        "@value",
+        "@language"
       ]
     }
   }

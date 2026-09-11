@@ -4,6 +4,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix schema: <http://schema.org/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 cdifd:CDIFArchiveHasPartShape a sh:NodeShape ;
@@ -196,10 +197,38 @@ cdifd:tabularDataShape a sh:NodeShape ;
             sh:severity sh:Violation ] ;
     sh:targetClass cdi:TabularTextDataSet .
 
+<https://cdif.org/validation/0.1/skos#ConceptShape> a sh:NodeShape ;
+    sh:message "A SKOS Concept must have at least a prefLabel." ;
+    sh:nodeKind sh:BlankNodeOrIRI ;
+    sh:property <https://cdif.org/validation/0.1/skos#conceptPrefLabelProperty> ;
+    sh:targetClass skos:Concept .
+
+<https://cdif.org/validation/0.1/skos#conceptBroaderNotSelfShape> a sh:NodeShape ;
+    sh:sparql [ sh:message "A Concept must not declare itself as skos:broader (reflexive hierarchy)." ;
+            sh:select """
+            PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+            SELECT $this
+            WHERE {
+                $this skos:broader $this .
+            }
+        """ ] ;
+    sh:targetClass skos:Concept .
+
+<https://cdif.org/validation/0.1/skos#prefLabelUniqueLangShape> a sh:NodeShape ;
+    sh:property [ sh:message "A Concept should have at most one skos:prefLabel per language tag (SKOS integrity condition S14)." ;
+            sh:path skos:prefLabel ;
+            sh:uniqueLang true ] ;
+    sh:targetClass skos:Concept .
+
 cdifd:termLabelProperty a sh:PropertyShape ;
     sh:datatype xsd:string ;
     sh:message "a label (schema:name) for the term must be provided, and must have at least 3 characters" ;
     sh:minCount 1 ;
     sh:minLength 3 ;
     sh:path schema:name .
+
+<https://cdif.org/validation/0.1/skos#conceptPrefLabelProperty> a sh:PropertyShape ;
+    sh:message "Every skos:Concept must have at least one skos:prefLabel." ;
+    sh:minCount 1 ;
+    sh:path skos:prefLabel .
 
