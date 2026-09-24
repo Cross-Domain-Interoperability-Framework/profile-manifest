@@ -178,163 +178,12 @@
     },
     "cdi:isStructuredBy": {
       "@embed": "@always",
-      "@type": "cdi:DataStructure",
       "schema:name": {},
       "schema:description": {},
       "schema:identifier": {
         "@embed": "@always"
       },
-      "cdif:isComposedOf": {
-        "@embed": "@always",
-        "@type": "cdi:DataStructureComponent",
-        "schema:name": {},
-        "schema:description": {},
-        "cdif:displayLabel": {},
-        "cdif:componentPosition": {
-          "@embed": "@always"
-        },
-        "cdif:identifies": {
-          "@embed": "@always",
-          "schema:name": {},
-          "schema:description": {},
-          "cdif:hasIntendedDataType": {
-            "@embed": "@always"
-          },
-          "cdif:describedUnitOfMeasure": {
-            "@embed": "@always"
-          },
-          "cdif:simpleUnitOfMeasure": {},
-          "cdif:takesSubstantiveValuesFrom": {
-            "@embed": "@always",
-            "cdif:takesValuesFrom": {
-              "@embed": "@always",
-              "cdif:identifier": {
-                "@embed": "@always"
-              },
-              "schema:name": {},
-              "cdif:references": {
-                "@embed": "@always"
-              }
-            },
-            "cdif:displayLabel": {},
-            "cdif:recommendedDataType": {}
-          },
-          "cdif:takesSentinelValuesFrom": {
-            "@embed": "@always",
-            "cdif:takesValuesFrom": {
-              "@embed": "@always",
-              "cdif:identifier": {
-                "@embed": "@always"
-              },
-              "schema:name": {},
-              "cdif:references": {
-                "@embed": "@always"
-              }
-            },
-            "cdif:displayLabel": {},
-            "cdif:recommendedDataType": {}
-          }
-        },
-        "cdif:hasMeasureRepresentation": {
-          "@embed": "@always",
-          "schema:name": {},
-          "schema:description": {},
-          "cdif:hasIntendedDataType": {
-            "@embed": "@always"
-          },
-          "cdif:describedUnitOfMeasure": {
-            "@embed": "@always"
-          },
-          "cdif:simpleUnitOfMeasure": {},
-          "cdif:takesSubstantiveValuesFrom": {
-            "@embed": "@always",
-            "cdif:takesValuesFrom": {
-              "@embed": "@always",
-              "cdif:identifier": {
-                "@embed": "@always"
-              },
-              "schema:name": {},
-              "cdif:references": {
-                "@embed": "@always"
-              }
-            },
-            "cdif:displayLabel": {},
-            "cdif:recommendedDataType": {}
-          },
-          "cdif:takesSentinelValuesFrom": {
-            "@embed": "@always",
-            "cdif:takesValuesFrom": {
-              "@embed": "@always",
-              "cdif:identifier": {
-                "@embed": "@always"
-              },
-              "schema:name": {},
-              "cdif:references": {
-                "@embed": "@always"
-              }
-            }
-          }
-        },
-        "cdif:hasAttributeRepresentation": {
-          "@embed": "@always",
-          "schema:name": {},
-          "schema:description": {},
-          "cdif:hasIntendedDataType": {
-            "@embed": "@always"
-          },
-          "cdi:qualifies": {
-            "@embed": "@always"
-          },
-          "cdif:describedUnitOfMeasure": {
-            "@embed": "@always"
-          },
-          "cdif:simpleUnitOfMeasure": {},
-          "cdif:takesSubstantiveValuesFrom": {
-            "@embed": "@always",
-            "cdif:takesValuesFrom": {
-              "@embed": "@always",
-              "cdif:identifier": {
-                "@embed": "@always"
-              },
-              "schema:name": {},
-              "cdif:references": {
-                "@embed": "@always"
-              }
-            }
-          }
-        },
-        "cdif:hasDimensionRepresentation": {
-          "@embed": "@always",
-          "schema:name": {},
-          "cdif:hasIntendedDataType": {
-            "@embed": "@always"
-          },
-          "cdif:takesSubstantiveValuesFrom": {
-            "@embed": "@always",
-            "cdif:takesValuesFrom": {
-              "@embed": "@always",
-              "cdif:identifier": {
-                "@embed": "@always"
-              },
-              "schema:name": {}
-            }
-          }
-        },
-        "cdif:hasVariableValueRepresentation": {
-          "@embed": "@always",
-          "schema:name": {},
-          "cdif:hasIntendedDataType": {
-            "@embed": "@always"
-          }
-        },
-        "cdif:hasVariableDescriptorRepresentation": {
-          "@embed": "@always",
-          "schema:name": {},
-          "cdif:hasIntendedDataType": {
-            "@embed": "@always"
-          }
-        }
-      }
+      "cdi:has_DataStructureComponent": {"@embed": "@always"}
     },
     "schema:potentialAction": {
       "@embed": "@always",
@@ -384,34 +233,11 @@
         },
         "cdi:isStructuredBy": {
           "@embed": "@always",
-          "@type": "cdi:DataStructure",
           "schema:name": {},
           "schema:identifier": {
             "@embed": "@always"
           },
-          "cdif:isComposedOf": {
-            "@embed": "@always",
-            "schema:name": {},
-            "cdif:displayLabel": {},
-            "cdif:identifies": {
-              "@embed": "@always"
-            },
-            "cdif:hasMeasureRepresentation": {
-              "@embed": "@always"
-            },
-            "cdif:hasAttributeRepresentation": {
-              "@embed": "@always"
-            },
-            "cdif:hasDimensionRepresentation": {
-              "@embed": "@always"
-            },
-            "cdif:hasVariableValueRepresentation": {
-              "@embed": "@always"
-            },
-            "cdif:hasVariableDescriptorRepresentation": {
-              "@embed": "@always"
-            }
-          }
+          "cdi:has_DataStructureComponent": {"@embed": "@always"}
         }
       },
       "schema:object": {
@@ -459,13 +285,7 @@
   },
   "cdif:hasPrimaryKey": {
     "@embed": "@always",
-    "cdif:isComposedOf": {
-      "@embed": "@always",
-      "cdi:indexes": {
-        "@embed": "@always"
-      },
-      "cdi:value": {}
-    }
+    "cdi:has_DataStructureComponent": {"@embed": "@always"}
   },
   "cdif:statistics": {
     "@embed": "@always",
