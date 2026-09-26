@@ -167,8 +167,8 @@ Observed on `doi:10.3334/CDIAC/OTG.NDP036`:
 ```
 seriesId  doi:10.3334/CDIAC/OTG.NDP036      ← stable; cite this
    2018-08-13   ess-dive-a821c884b3b9e26…
-   2018-08-23   ess-dive-5c2190a36a8151c…    obsoletes ↑
-   2021-04-30   ess-dive-7503a102cb11fa8…    obsoletes ↑   ← head
+   2018-08-23   ess-dive-5c2190a36a8151c…    obsoletes ^
+   2021-04-30   ess-dive-7503a102cb11fa8…    obsoletes ^   ← head
 ```
 
 - Every version has its **own immutable PID**. Content at a PID never
