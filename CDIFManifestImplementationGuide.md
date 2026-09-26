@@ -60,6 +60,7 @@ The resources that make up the package, where each is **independently retrievabl
 
 - **Cardinality:** Optional
 - **Content:** array of `resourcePartItem`
+- **Description:** describes a part of a composite dataset as a separate resource that is individually accessible
 
 Type each part for what it is — `schema:Dataset` for data, `schema:CreativeWork` for a codebook, methods document or quality report, `schema:MediaObject` for a browse image. A part may carry its own `schema:distribution`, and may be typed `schema:DataDownload`; an archive part may not.
 
@@ -70,6 +71,7 @@ Use `schema:about` on a part that describes another — a codebook, a data dicti
 ### schema:distribution
 A bundle distribution is marked **positively**, by including `schema:Collection` in its `@type` alongside `schema:DataDownload`. When that marker is present the distribution MUST carry `schema:hasPart` enumerating the member files, each a `schema:MediaObject`. The archive's media type goes in `schema:encodingFormat` and is *not* the trigger — an earlier version keyed off `application/zip`, which meant the rule silently failed to apply to tar, 7z, or any other bundle format. 
 - **Cardinality:** Optional
+- **Description:** specifies how to acquired useful representations of the described resource.
 
 # Class Definitions
 
