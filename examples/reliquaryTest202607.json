@@ -7,7 +7,7 @@
   },
   "@id": "https://example.com/99152/morbcitationlist",
   "@type": ["schema:Collection"],
-  "schema:additionaltype": ["citation list"],
+  "schema:additionalType": ["citation list"],
   "schema:name": "Citations to publications reporting MORB chemistry",
   "schema:description": "this record provide a list of citations for publications used in the compilation of mid ocean ridge basalt chemistry",
   "schema:identifier": "https://example.com/99152/morbcitationlist",
