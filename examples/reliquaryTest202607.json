@@ -157,7 +157,7 @@
   "schema:subjectOf": {
     "@id": "https://example.com/99152/URIforTheMetadata",
     "@type": ["schema:Dataset"],
-    "schema:additionalType": ["dcat:CatalogRecord"],
+    "schema:additionalType": [{"@id": "dcat:CatalogRecord"}],
     "schema:about": {"@id": "https://example.com/99152/morbcitationlist"},
     "schema:dateModified": "2017-05-23",
     "schema:maintainer": {

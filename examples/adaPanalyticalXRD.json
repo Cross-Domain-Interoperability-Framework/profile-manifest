@@ -23,7 +23,9 @@
     "@type": [
       "schema:PropertyValue"
     ],
-    "schema:propertyID": "https://registry.identifiers.org/registry/doi",
+    "schema:propertyID": {
+      "@id": "https://registry.identifiers.org/registry/doi"
+    },
     "schema:value": "10.60707/2j0t-gq80",
     "schema:url": "https://doi.org/10.60707/2j0t-gq80"
   },
@@ -304,7 +306,9 @@
       "schema:Dataset"
     ],
     "schema:additionalType": [
-      "dcat:CatalogRecord"
+      {
+        "@id": "dcat:CatalogRecord"
+      }
     ],
     "@id": "ada:record_44#metadata",
     "schema:name": "Metadata record for: JSC-ARES Panalytical XRD data for sample OREX-500005-0",

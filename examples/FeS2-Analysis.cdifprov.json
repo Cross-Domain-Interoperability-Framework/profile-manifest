@@ -12,7 +12,9 @@
       "@id": "#a5a33e97-2433-492b-8185-0e11c32cd595",
       "schema:name": "Run of Galaxy workflow engine",
       "schema:additionalType": [
-        "schema:OrganizeAction"
+        {
+          "@id": "schema:OrganizeAction"
+        }
       ],
       "schema:actionStatus": "schema:CompletedActionStatus",
       "schema:startTime": "2024-10-23T14:09:56.604071",
@@ -34,7 +36,9 @@
       "@id": "#d5787109-088d-4886-a72e-03f42a4ec5cc",
       "schema:name": "FeS2 Analysis",
       "schema:additionalType": [
-        "schema:CreateAction"
+        {
+          "@id": "schema:CreateAction"
+        }
       ],
       "schema:actionStatus": "schema:CompletedActionStatus",
       "schema:startTime": "2024-10-23T14:09:38.754317",
@@ -47,7 +51,9 @@
         "@id": "workflows/6f2a09489271f4de.gxwf.yml",
         "schema:name": "FeS2 Analysis",
         "schema:additionalType": [
-          "schema:ComputationalWorkflow"
+          {
+            "@id": "schema:ComputationalWorkflow"
+          }
         ],
         "schema:object": [
           {
@@ -57,7 +63,9 @@
             "@id": "#f640df2f-ce68-4309-bc83-2e052fb749f1",
             "schema:name": "fes2_rt01_mar02.xmu",
             "schema:additionalType": [
-              "schema:FormalParameter",
+              {
+                "@id": "schema:FormalParameter"
+              },
               "File"
             ]
           },
@@ -68,7 +76,9 @@
             "@id": "#0c058fb5-124f-4a1e-820a-643ff322c47a",
             "schema:name": "1564889.cif",
             "schema:additionalType": [
-              "schema:FormalParameter",
+              {
+                "@id": "schema:FormalParameter"
+              },
               "File"
             ]
           }
@@ -81,7 +91,9 @@
             "@id": "#77c5b2f3-9a04-44dd-befd-a76467d5277c",
             "schema:name": "FeS2_plot",
             "schema:additionalType": [
-              "schema:FormalParameter",
+              {
+                "@id": "schema:FormalParameter"
+              },
               "File"
             ]
           },
@@ -92,7 +104,9 @@
             "@id": "#0b97bec8-4ea8-4a62-bc9d-fb03e229da8c",
             "schema:name": "FeS2_athena",
             "schema:additionalType": [
-              "schema:FormalParameter",
+              {
+                "@id": "schema:FormalParameter"
+              },
               "File"
             ]
           },
@@ -103,7 +117,9 @@
             "@id": "#d27f0edf-71e5-4739-b016-770e7bcd02bb",
             "schema:name": "fes2_sp",
             "schema:additionalType": [
-              "schema:FormalParameter",
+              {
+                "@id": "schema:FormalParameter"
+              },
               "File"
             ]
           },
@@ -114,7 +130,9 @@
             "@id": "#f00eb10f-cf39-4a5c-a65f-f78e3ebd0600",
             "schema:name": "fes2_gds",
             "schema:additionalType": [
-              "schema:FormalParameter",
+              {
+                "@id": "schema:FormalParameter"
+              },
               "File"
             ]
           },
@@ -125,7 +143,9 @@
             "@id": "#8b809a36-4335-40f1-b5a7-279154baaeaa",
             "schema:name": "fit_report_FeS2",
             "schema:additionalType": [
-              "schema:FormalParameter",
+              {
+                "@id": "schema:FormalParameter"
+              },
               "File"
             ]
           },
@@ -136,7 +156,9 @@
             "@id": "#783887b9-b28d-4a8f-8c88-91eabb9170bb",
             "schema:name": "rmr_FeS2",
             "schema:additionalType": [
-              "schema:FormalParameter",
+              {
+                "@id": "schema:FormalParameter"
+              },
               "File"
             ]
           },
@@ -147,7 +169,9 @@
             "@id": "#acc4dcb8-d90b-40d7-aac2-08878864e45e",
             "schema:name": "chikr_FeS2",
             "schema:additionalType": [
-              "schema:FormalParameter",
+              {
+                "@id": "schema:FormalParameter"
+              },
               "File"
             ]
           }

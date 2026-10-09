@@ -23,7 +23,9 @@
     "@type": [
       "schema:PropertyValue"
     ],
-    "schema:propertyID": "https://registry.identifiers.org/registry/doi",
+    "schema:propertyID": {
+      "@id": "https://registry.identifiers.org/registry/doi"
+    },
     "schema:value": "10.60707/yv1f-jb20",
     "schema:url": "https://doi.org/10.60707/yv1f-jb20"
   },
@@ -442,7 +444,9 @@
       "schema:Dataset"
     ],
     "schema:additionalType": [
-      "dcat:CatalogRecord"
+      {
+        "@id": "dcat:CatalogRecord"
+      }
     ],
     "@id": "ada:record_134#metadata",
     "schema:name": "Metadata record for: Pyrolysis GCMS Bundle - First Bennu TAGSAM aggregate",
