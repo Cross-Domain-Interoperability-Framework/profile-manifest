@@ -7,6 +7,37 @@
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+cdifd:AdditionalTypeUriShouldBeIRIShape a sh:NodeShape ;
+    sh:message "schema:additionalType value looks like a URI or CURIE (prefix:localname) but is serialized as a string literal. Serialize URI values as JSON-LD IRI references: {\"@id\":\"...\"}. Free-label strings like 'MaterialSample' remain valid as strings; schema:DefinedTerm objects are also permitted." ;
+    sh:or ( [ sh:nodeKind sh:IRI ] [ sh:class schema:DefinedTerm ] [ sh:datatype xsd:string ;
+                sh:not [ sh:pattern "^[A-Za-z][A-Za-z0-9+.\\-]*:[^\\s\"]+$" ] ] ) ;
+    sh:severity sh:Violation ;
+    sh:targetObjectsOf schema:additionalType .
+
+cdifd:CDIFAddPropertyTermShape a sh:NodeShape ;
+    sh:message "A Term must have a name (label) or an identifier. It should have both!." ;
+    sh:property [ sh:message "a defined term should have an identifier that is a resolvable URI" ;
+            sh:minCount 1 ;
+            sh:or ( [ sh:nodeKind sh:Literal ] [ sh:and ( [ sh:class schema:PropertyValue ] [ sh:or ( [ sh:property [ sh:datatype xsd:string ;
+                                                        sh:message "a value for the identifier should be provided; can provide either full URI or identifier token part of URI if a url is provided." ;
+                                                        sh:minCount 1 ;
+                                                        sh:path schema:value ] ] [ sh:property [ sh:datatype xsd:string ;
+                                                        sh:message "value must be a resolvable URL, but we aren't testing to see if the URL resolves..... Can't get xsd:anyURI to work with JSON Schema validation..." ;
+                                                        sh:minCount 1 ;
+                                                        sh:path schema:url ;
+                                                        sh:pattern "^https?:\\/\\/[^\\s]+$" ] ] ) ] ) ] ) ;
+            sh:path schema:identifier ] ;
+    sh:target [ a sh:SPARQLTarget ;
+            sh:select """
+      PREFIX schema: <http://schema.org/>
+      SELECT DISTINCT ?this
+        WHERE {
+          ?this a schema:DefinedTerm .
+          FILTER (
+            EXISTS {  ?s schema:propertyID ?this . }
+          )
+        }""" ] .
+
 cdifd:CDIFArchiveHasPartShape a sh:NodeShape ;
     sh:property [ sh:message "An archive distribution must have at least one component file (schema:hasPart)." ;
             sh:minCount 1 ;
@@ -165,6 +196,47 @@ cdifd:CDIFManifestShape a sh:NodeShape ;
             }
           """ ] .
 
+cdifd:CDIFadditionalPropertyShape a sh:NodeShape ;
+    sh:message "The propertyID identifies the kind of property represented by the variable. a propertyID must be a uri reference, a name string, or a schema:DefinedTerm",
+        "the context of an identifier, the PropertyValue provides the identifeir value string-- either as a schema:value or a url. The value can be either a full URI or identifier token part of URI if a url is provided. url value must be a resolvable URI that identifies the resoruce." ;
+    sh:property [ sh:message "a value for the additional property must be provided." ;
+            sh:minCount 1 ;
+            sh:path schema:value ],
+        [ sh:datatype xsd:string ;
+            sh:message "a url for the additionalProperty is expected to be a resolvable HTTP URI, but we aren't testing to see if the URL resolves...." ;
+            sh:minCount 0 ;
+            sh:path schema:url ;
+            sh:pattern "^https?:\\/\\/[^\\s]+$" ;
+            sh:severity sh:info ],
+        [ sh:minCount 1 ;
+            sh:or ( [ sh:nodeKind sh:IRI ] [ sh:datatype xsd:string ;
+                        sh:minLength 5 ] [ sh:class schema:DefinedTerm ] ) ;
+            sh:path schema:propertyID ;
+            sh:severity sh:Warning ],
+        cdifd:additionalPropertyNameProperty ;
+    sh:target [ a sh:SPARQLTarget ;
+            sh:select """
+      PREFIX schema: <http://schema.org/>
+      SELECT DISTINCT ?this
+        WHERE {
+        ?this a schema:PropertyValue .
+        {
+          ?this schema:name "example additional property" .
+          FILTER NOT EXISTS { ?s ?p ?this . }
+        }
+        Union
+        {
+          ?s schema:additionalProperty ?this .
+        }
+      }""" ] .
+
+cdifd:PropertyIDUriShouldBeIRIShape a sh:NodeShape ;
+    sh:message "schema:propertyID value looks like a URI or CURIE (prefix:localname) but is serialized as a string literal. Serialize URI values as JSON-LD IRI references: {\"@id\":\"...\"}. Free-label strings like 'temperature' remain valid as strings." ;
+    sh:or ( [ sh:nodeKind sh:IRI ] [ sh:class schema:DefinedTerm ] [ sh:datatype xsd:string ;
+                sh:not [ sh:pattern "^[A-Za-z][A-Za-z0-9+.\\-]*:[^\\s\"]+$" ] ] ) ;
+    sh:severity sh:Violation ;
+    sh:targetObjectsOf schema:propertyID .
+
 cdifd:dataCubeShape a sh:NodeShape ;
     sh:message "Data cube nodes (cdi:StructuredDataSet) should have physical mappings." ;
     sh:property [ sh:message "A StructuredDataSet should have physical mappings (cdif:hasPhysicalMapping) linking variables to their physical representation." ;
@@ -222,6 +294,13 @@ cdifd:tabularDataShape a sh:NodeShape ;
             sh:path skos:prefLabel ;
             sh:uniqueLang true ] ;
     sh:targetClass skos:Concept .
+
+cdifd:additionalPropertyNameProperty a sh:PropertyShape ;
+    sh:datatype xsd:string ;
+    sh:message "a name for the additional property must be provided, and have a length of at least 3 characters." ;
+    sh:minCount 1 ;
+    sh:minLength 3 ;
+    sh:path schema:name .
 
 cdifd:termLabelProperty a sh:PropertyShape ;
     sh:datatype xsd:string ;
