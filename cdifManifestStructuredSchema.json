@@ -9,17 +9,8 @@
         "dcterms:conformsTo": {
           "type": "array",
           "items": {
-            "type": "object",
-            "required": [
-              "@id"
-            ],
-            "additionalProperties": false,
-            "properties": {
-              "@id": {
-                "type": "string",
-                "description": "uri for specifications that this metadata record conforms to"
-              }
-            }
+            "$ref": "#/$defs/ObjectReference",
+            "description": "uri for specifications that this metadata record conforms to"
           },
           "minItems": 1,
           "contains": {
@@ -79,17 +70,8 @@
             "type": "array",
             "description": "The part this one is about. Use it on a part that describes another -- a codebook, a data dictionary, a quality report, a metadata sidecar -- so that a consumer can tell WHICH part it documents rather than only that both are in the package. Equivalent in this use to cito:documents, which is how OAI-ORE packages express the same relationship; schema:subjectOf is the declared inverse.",
             "items": {
-              "type": "object",
-              "required": [
-                "@id"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "@id": {
-                  "type": "string",
-                  "description": "Reference to the @id of the part being described."
-                }
-              }
+              "$ref": "#/$defs/ObjectReference",
+              "description": "Reference to the @id of the part being described."
             }
           }
         }
@@ -158,17 +140,8 @@
                                 "description": "A SKOS concept identified by URI, a schema:DefinedTerm, or an inline cdif:Concept. Shared shape used wherever a CDIF property carries either a controlled-vocabulary reference or an inline concept definition.",
                                 "anyOf": [
                                   {
-                                    "type": "object",
-                                    "required": [
-                                      "@id"
-                                    ],
-                                    "additionalProperties": false,
-                                    "properties": {
-                                      "@id": {
-                                        "type": "string",
-                                        "description": "reference to a skos concept for the data type"
-                                      }
-                                    }
+                                    "$ref": "#/$defs/ObjectReference",
+                                    "description": "reference to a skos concept for the data type"
                                   },
                                   {
                                     "$ref": "#/$defs/DefinedTerm"
@@ -257,17 +230,8 @@
                           "type": "array",
                           "description": "For metadata sidecar files, references the data file this metadata describes.",
                           "items": {
-                            "type": "object",
-                            "required": [
-                              "@id"
-                            ],
-                            "additionalProperties": false,
-                            "properties": {
-                              "@id": {
-                                "type": "string",
-                                "description": "Reference to the @id of the data file described by this sidecar."
-                              }
-                            }
+                            "$ref": "#/$defs/ObjectReference",
+                            "description": "Reference to the @id of the data file described by this sidecar."
                           }
                         },
                         "spdx:checksum": {
@@ -369,17 +333,8 @@
                                             "description": "A SKOS concept identified by URI, a schema:DefinedTerm, or an inline cdif:Concept. Shared shape used wherever a CDIF property carries either a controlled-vocabulary reference or an inline concept definition.",
                                             "anyOf": [
                                               {
-                                                "type": "object",
-                                                "required": [
-                                                  "@id"
-                                                ],
-                                                "additionalProperties": false,
-                                                "properties": {
-                                                  "@id": {
-                                                    "type": "string",
-                                                    "description": "reference to a skos concept for the data type"
-                                                  }
-                                                }
+                                                "$ref": "#/$defs/ObjectReference",
+                                                "description": "reference to a skos concept for the data type"
                                               },
                                               {
                                                 "$ref": "#/$defs/DefinedTerm"
@@ -420,18 +375,8 @@
                                         "default": false
                                       },
                                       "cdif:formats_InstanceVariable": {
-                                        "type": "object",
-                                        "required": [
-                                          "@id"
-                                        ],
-                                        "additionalProperties": false,
-                                        "description": "Reference to a variable defined in schema:variableMeasured.",
-                                        "properties": {
-                                          "@id": {
-                                            "type": "string",
-                                            "description": "This should be a reference to a variable defined in the schema:variableMeasured section."
-                                          }
-                                        }
+                                        "$ref": "#/$defs/ObjectReference",
+                                        "description": "Reference to a variable defined in schema:variableMeasured."
                                       }
                                     },
                                     "allOf": [
@@ -648,17 +593,8 @@
                                         "description": "A SKOS concept identified by URI, a schema:DefinedTerm, or an inline cdif:Concept. Shared shape used wherever a CDIF property carries either a controlled-vocabulary reference or an inline concept definition.",
                                         "anyOf": [
                                           {
-                                            "type": "object",
-                                            "required": [
-                                              "@id"
-                                            ],
-                                            "additionalProperties": false,
-                                            "properties": {
-                                              "@id": {
-                                                "type": "string",
-                                                "description": "reference to a skos concept for the data type"
-                                              }
-                                            }
+                                            "$ref": "#/$defs/ObjectReference",
+                                            "description": "reference to a skos concept for the data type"
                                           },
                                           {
                                             "$ref": "#/$defs/DefinedTerm"
@@ -699,18 +635,8 @@
                                     "default": false
                                   },
                                   "cdif:formats_InstanceVariable": {
-                                    "type": "object",
-                                    "required": [
-                                      "@id"
-                                    ],
-                                    "additionalProperties": false,
-                                    "description": "Reference to a variable defined in schema:variableMeasured.",
-                                    "properties": {
-                                      "@id": {
-                                        "type": "string",
-                                        "description": "This should be a reference to a variable defined in the schema:variableMeasured section."
-                                      }
-                                    }
+                                    "$ref": "#/$defs/ObjectReference",
+                                    "description": "Reference to a variable defined in schema:variableMeasured."
                                   }
                                 },
                                 "allOf": [
@@ -781,16 +707,7 @@
                                           "type": "string"
                                         },
                                         {
-                                          "type": "object",
-                                          "required": [
-                                            "@id"
-                                          ],
-                                          "additionalProperties": false,
-                                          "properties": {
-                                            "@id": {
-                                              "type": "string"
-                                            }
-                                          }
+                                          "$ref": "#/$defs/ObjectReference"
                                         },
                                         {
                                           "$ref": "#/$defs/DefinedTerm"
@@ -906,6 +823,21 @@
     }
   },
   "$defs": {
+    "ObjectReference": {
+      "title": "Object Reference",
+      "description": "A reference to a node defined elsewhere, by its @id.",
+      "type": "object",
+      "properties": {
+        "@id": {
+          "type": "string",
+          "description": "resolvable @id of the referenced node"
+        }
+      },
+      "required": [
+        "@id"
+      ],
+      "additionalProperties": false
+    },
     "DefinedTerm": {
       "description": "schema.org Defined Term schema.\n\n**Union-type policy:** In CDIF profile UML models an attribute typed as\nschema:DefinedTerm is represented by a single attribute of that class type.\nThe JSON Schema implementation permits the property value to be EITHER a\nplain string (interpreted as schema:name or schema:termCode in the default\nvocabulary) OR a full schema:DefinedTerm object (with explicit @type, name,\nidentifier, termCode, inDefinedTermSet). Consumers should accept either form.\n\nNote that this differs from the cdif Concept policy: a Concept (skos:Concept)\nin CDIF profiles MUST be a controlled-vocabulary entry (object form or\n@id-reference) — plain strings are not permitted for Concept-typed values\nbecause vocabulary identity cannot be recovered from an unscoped label.\n",
       "type": "object",
@@ -949,16 +881,7 @@
                       "type": "string"
                     },
                     {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "@id"
-                      ],
-                      "properties": {
-                        "@id": {
-                          "type": "string"
-                        }
-                      }
+                      "$ref": "#/$defs/ObjectReference"
                     }
                   ],
                   "description": "In this context for the schema:PropertyValue, this field is an identifier for the identifier schema, e.g. DOI, ARK.  Get values from https://registry.identifiers.org/registry/ for interoperability. URI-shape values MUST be serialized as JSON-LD IRI references ({\"@id\":\"...\"}) so they participate in RDF entailment; free-label strings remain valid as strings."
@@ -1004,16 +927,7 @@
               "type": "string"
             },
             {
-              "type": "object",
-              "required": [
-                "@id"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "@id": {
-                  "type": "string"
-                }
-              }
+              "$ref": "#/$defs/ObjectReference"
             }
           ]
         },
@@ -1275,30 +1189,12 @@
           "description": "Concept scheme(s) this concept belongs to.",
           "anyOf": [
             {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "@id": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "@id"
-              ]
+              "$ref": "#/$defs/ObjectReference"
             },
             {
               "type": "array",
               "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "@id": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "@id"
-                ]
+                "$ref": "#/$defs/ObjectReference"
               }
             }
           ]
@@ -1307,30 +1203,12 @@
           "description": "Concept scheme(s) for which this is a top concept.",
           "anyOf": [
             {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "@id": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "@id"
-              ]
+              "$ref": "#/$defs/ObjectReference"
             },
             {
               "type": "array",
               "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "@id": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "@id"
-                ]
+                "$ref": "#/$defs/ObjectReference"
               }
             }
           ]
@@ -1341,18 +1219,7 @@
           "items": {
             "anyOf": [
               {
-                "type": "object",
-                "additionalProperties": false,
-                "description": "A reference to a SKOS Concept by URI.",
-                "properties": {
-                  "@id": {
-                    "type": "string",
-                    "description": "URI of the referenced concept."
-                  }
-                },
-                "required": [
-                  "@id"
-                ]
+                "$ref": "#/$defs/ObjectReference"
               },
               {
                 "$ref": "#/$defs/Concept"
@@ -1366,18 +1233,7 @@
           "items": {
             "anyOf": [
               {
-                "type": "object",
-                "additionalProperties": false,
-                "description": "A reference to a SKOS Concept by URI.",
-                "properties": {
-                  "@id": {
-                    "type": "string",
-                    "description": "URI of the referenced concept."
-                  }
-                },
-                "required": [
-                  "@id"
-                ]
+                "$ref": "#/$defs/ObjectReference"
               },
               {
                 "$ref": "#/$defs/Concept"
