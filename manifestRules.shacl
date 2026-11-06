@@ -266,7 +266,10 @@ cdifd:tabularDataShape a sh:NodeShape ;
     sh:or ( [ sh:property [ sh:hasValue true ;
                         sh:path cdi:isDelimited ] ] [ sh:property [ sh:hasValue true ;
                         sh:path cdi:isFixedWidth ] ] ) ;
-    sh:property [ sh:message "A TabularTextDataSet must have physical mappings (cdif:hasPhysicalMapping) linking variables to columns (required by the JSON Schema)." ;
+    sh:targetClass cdi:TabularTextDataSet .
+
+cdifd:tabularTextDataSetMappingsShape a sh:NodeShape ;
+    sh:property [ sh:message "A TabularTextDataSet must have physical mappings (cdif:hasPhysicalMapping) linking variables to columns; required by the JSON Schema of both cdifTabularData and cdifTabularTextDataSet." ;
             sh:minCount 1 ;
             sh:path <https://w3id.org/cdif/hasPhysicalMapping> ;
             sh:severity sh:Violation ] ;
