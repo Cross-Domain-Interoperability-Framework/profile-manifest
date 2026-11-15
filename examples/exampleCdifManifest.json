@@ -32,7 +32,7 @@
     },
     "dcterms:conformsTo": [
       {
-        "@id": "https://w3id.org/cdif/manifest/1.1"
+        "@id": "https://w3id.org/cdif/manifest/2.0"
       }
     ]
   },
@@ -49,7 +49,7 @@
       ],
       "dcterms:conformsTo": [
         {
-          "@id": "https://w3id.org/cdif/manifest/1.1"
+          "@id": "https://w3id.org/cdif/manifest/2.0"
         }
       ],
       "schema:hasPart": [

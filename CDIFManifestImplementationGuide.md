@@ -11,7 +11,7 @@ A resource conforms to the CDIF Manifest profile when its catalog record declare
 "schema:subjectOf": {
   "@type": ["schema:CreativeWork", "dcat:CatalogRecord"],
   "dcterms:conformsTo": [
-    "https://w3id.org/cdif/manifest/1.1"
+    "https://w3id.org/cdif/manifest/2.0"
   ]
 }
 ```
@@ -36,10 +36,10 @@ Validation is **open-world**: properties not described by the profile are allowe
 
 ## schema:Dataset {#sec-schema-dataset}
 
-Profile module for packages: the resources that make up a dataset and where to retrieve each of them. Marks the catalog record as conformant to the CDIF manifest spec (https://w3id.org/cdif/manifest/1.1) and declares `schema:hasPart` in the two places a package needs it — on the `schema:Dataset`, for parts that are independently accessible at their own addresses, and on a `schema:distribution` item, for component files inside an archive (ZIP, etc.) that have no address of their own. The base schema:distribution anyOf [DataDownload, WebAPI] contributed by cdifCore is preserved — this BB only adds property constraints, no new anyOf branch. (Merged from the previous cdifProfile/cdifArchive BB, which held only the $defs for ArchivePart; everything now lives here.)
+Profile module for packages: the resources that make up a dataset and where to retrieve each of them. Marks the catalog record as conformant to the CDIF manifest spec (https://w3id.org/cdif/manifest/2.0) and declares `schema:hasPart` in the two places a package needs it — on the `schema:Dataset`, for parts that are independently accessible at their own addresses, and on a `schema:distribution` item, for component files inside an archive (ZIP, etc.) that have no address of their own. The base schema:distribution anyOf [DataDownload, WebAPI] contributed by cdifCore is preserved — this BB only adds property constraints, no new anyOf branch. (Merged from the previous cdifProfile/cdifArchive BB, which held only the $defs for ArchivePart; everything now lives here.)
 
 ### schema:subjectOf
-- (required) conformance statement in the subjectOf/dcat:catalogRecord must include "dcterms:conformsTo" includes    "https://w3id.org/cdif/manifest/1.1"
+- (required) conformance statement in the subjectOf/dcat:catalogRecord must include "dcterms:conformsTo" includes    "https://w3id.org/cdif/manifest/2.0"
 
 ### Which `schema:hasPart` is this?
 

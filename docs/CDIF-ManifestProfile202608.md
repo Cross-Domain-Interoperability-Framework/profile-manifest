@@ -366,7 +366,7 @@ See [`RO-Crate-relationship.md`](RO-Crate-relationship.md) for the wider compari
 ## 6. CDIF JSON-LD implementation
 
 The profile module is `cdifManifest`; a conforming record declares
-`https://w3id.org/cdif/manifest/1.1` in
+`https://w3id.org/cdif/manifest/2.0` in
 `schema:subjectOf` → `dcterms:conformsTo`. The release artifacts are
 `cdifManifestStructuredSchema.json` (JSON Schema),
 `manifestRules.shacl` (SHACL) and `cdifManifest-frame.jsonld` (frame),
