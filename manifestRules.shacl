@@ -307,9 +307,9 @@ cdifd:additionalPropertyNameProperty a sh:PropertyShape ;
 
 cdifd:termLabelProperty a sh:PropertyShape ;
     sh:datatype xsd:string ;
-    sh:message "a label (schema:name) for the term must be provided, and must have at least 3 characters" ;
+    sh:message "a label (schema:name) for the term must be provided, and must not be empty" ;
     sh:minCount 1 ;
-    sh:minLength 3 ;
+    sh:minLength 1 ;
     sh:path schema:name .
 
 <https://cdif.org/validation/0.1/skos#conceptPrefLabelProperty> a sh:PropertyShape ;
