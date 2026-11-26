@@ -300,9 +300,9 @@ cdifd:tabularTextDataSetMappingsShape a sh:NodeShape ;
 
 cdifd:additionalPropertyNameProperty a sh:PropertyShape ;
     sh:datatype xsd:string ;
-    sh:message "a name for the additional property must be provided, and have a length of at least 3 characters." ;
+    sh:message "a name for the additional property must be provided, and must not be empty." ;
     sh:minCount 1 ;
-    sh:minLength 3 ;
+    sh:minLength 1 ;
     sh:path schema:name .
 
 cdifd:termLabelProperty a sh:PropertyShape ;
